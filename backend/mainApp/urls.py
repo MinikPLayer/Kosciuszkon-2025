@@ -19,6 +19,8 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('user/', views.OneUserData.as_view(), name='user'),
+    # path('user/', views.OneUserData.as_view(), name='user'),
+    path('chat/', views.ChatAPI.as_view(), name='chat'),
+
 
 ]

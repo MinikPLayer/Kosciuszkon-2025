@@ -5,7 +5,7 @@ import 'login_page.dart';
 class ProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
 
-  const ProfilePage({Key? key, required this.userData}) : super(key: key);
+  const ProfilePage({super.key, required this.userData});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
