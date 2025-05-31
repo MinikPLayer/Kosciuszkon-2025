@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend_calculator/views/widget_tree.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
