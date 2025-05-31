@@ -131,14 +131,14 @@ def load_knowledge(file_path):
 
 
 class ChatAPI(APIView):
-    # permission_classes = (permissions.IsAuthenticated,)  # Only authenticated users can log out
 
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # def get(self, request):
+    #     serializer = UserSerializer(request.user)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         prompt = request.data.get("prompt")
+        print(request.data)
 
         knowledge = load_knowledge('mainApp/wiedza_o_fotowoltaice.txt')
 
@@ -154,7 +154,7 @@ class ChatAPI(APIView):
             options={'temperature': 0.7}
         )
 
-        return Response({"answer": response}, status=status.HTTP_200_OK)
+        return Response({"answer": response['response']}, status=status.HTTP_200_OK)
 
 
 class SimpleCalculator(APIView):
