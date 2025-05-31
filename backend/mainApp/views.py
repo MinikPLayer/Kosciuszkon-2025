@@ -1,3 +1,4 @@
+import ollama
 from django.contrib.auth import authenticate, get_user_model
 from django.shortcuts import render
 from rest_framework import status, permissions
@@ -114,3 +115,23 @@ class OneUserData(APIView):
         user = request.user
         user.delete()
         return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ChatAPI(APIView):
+    # permission_classes = (permissions.IsAuthenticated,)  # Only authenticated users can log out
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        prompt = request.data.get("prompt")
+
+        response = ollama.generate(
+            model='mistral',
+            prompt="Jak działa fotowoltaika?",
+            system=prompt,
+            options={'temperature': 0.7}
+        )
+
+        return Response({"answer": response}, status=status.HTTP_200_OK)
