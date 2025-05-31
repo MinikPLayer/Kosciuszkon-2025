@@ -95,15 +95,19 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
 
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'julnowa1',
+    #     'USER': 'julnowa1',
+    #     'PASSWORD': 'yZzchbgW5DN4m21e',
+    #     'HOST': 'mysql.agh.edu.pl',  # lub adres serwera MySQL
+    #     'PORT': '3306',       # domyślny port MySQL
+    # }
+
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-
-    # 'sqlite': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
 }
 
 
