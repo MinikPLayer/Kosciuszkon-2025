@@ -1,0 +1,5 @@
+Wspolczynnik degradacji przyjeto za: 
+https://www.solfinity.pl/kalkulator
+
+Modelowanie degradacji modułów fotowoltaiki
+https://pvpmc.sandia.gov/tools/pv-degradation-methods/
