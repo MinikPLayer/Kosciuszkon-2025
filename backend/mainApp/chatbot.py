@@ -16,7 +16,7 @@ knowledge = load_knowledge('wiedza_o_fotowoltaice.txt')
 system_prompt = f"""
 Jesteś ekspertem od energii słonecznej. 
 Odpowiadaj na pytania korzystając z tej wiedzy:
-{knowledge}
+{knowledge} i źródeł internetowych.
 Jeśli nie znasz odpowiedzi, powiedz że nie wiesz.
 """
 
