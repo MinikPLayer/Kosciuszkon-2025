@@ -119,6 +119,17 @@ UserModel = get_user_model()
 #         return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 #
 
+
+def load_knowledge(file_path):
+    """Wczytuje wiedzę z pliku tekstowego"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f"Plik {file_path} nie istnieje!")
+        return ""
+
+
 class ChatAPI(APIView):
     # permission_classes = (permissions.IsAuthenticated,)  # Only authenticated users can log out
 
@@ -129,14 +140,22 @@ class ChatAPI(APIView):
     def post(self, request):
         prompt = request.data.get("prompt")
 
+        knowledge = load_knowledge('mainApp/wiedza_o_fotowoltaice.txt')
+
         response = ollama.generate(
             model='mistral',
-            prompt="Jak działa fotowoltaika?",
-            system=prompt,
+            prompt=prompt,
+            system=f"""
+                    Jesteś ekspertem od energii słonecznej. 
+                    Odpowiadaj na pytania korzystając z tej wiedzy:
+                    {knowledge}.
+                    Jeśli nie znasz odpowiedzi, powiedz że nie wiesz.
+                    """,
             options={'temperature': 0.7}
         )
 
         return Response({"answer": response}, status=status.HTTP_200_OK)
+
 
 class SimpleCalculator(APIView):
     parser_classes = [JSONParser]
