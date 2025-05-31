@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_calculator/views/pages/analitical_page.dart';
+import 'package:frontend_calculator/views/pages/offer_page.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/chatbot_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
@@ -9,12 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/notifiers.dart';
 import 'widgets/navbar_widget.dart';
 
-List<Widget> pages = [
-  const HomePage(),
-  const CalculatorPage(),
-  const DictionaryPage(),
-  const AnaliticalPage()
-];
+List<Widget> pages = [const HomePage(), const CalculatorPage(), const DictionaryPage(), const OfferPage()];
 
 class WidgetTree extends StatelessWidget {
   const WidgetTree({super.key});
@@ -23,40 +18,27 @@ class WidgetTree extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
             'Pierogi PV',
-            style: GoogleFonts.poppins(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: Colors.lightGreenAccent,
-            ),
+            style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.lightGreenAccent),
           ),
           centerTitle: true,
 
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Color(0xFF4CAF50),
-                  Color(0xFF8BC34A),
-                ],
+                colors: [Color(0xFF4CAF50), Color(0xFF8BC34A)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-              )
+              ),
             ),
           ),
           elevation: 6,
           actions: [
             IconButton(
-              icon: Icon(
-                Icons.person,
-                color: Colors.greenAccent,
-                size: 28,
-              ),
+              icon: Icon(Icons.person, color: Colors.greenAccent, size: 28),
               onPressed: () async {
-
                 final userData = {
                   'email': 'example@email.com',
                   'userType': 'Osoba prywatna',
@@ -69,13 +51,9 @@ class WidgetTree extends StatelessWidget {
                   'storageYears': '2',
                 };
 
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage(userData: userData)),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userData: userData)));
               },
-              
+
               tooltip: 'Profil',
             ),
           ],
@@ -90,12 +68,8 @@ class WidgetTree extends StatelessWidget {
               },
               child: ConstrainedBox(
                 key: ValueKey<int>(selectedPage),
-                constraints: BoxConstraints(
-                  
-                ),
-                child: Center(
-                  child: pages.elementAt(selectedPage),
-                ),
+                constraints: BoxConstraints(),
+                child: Center(child: pages.elementAt(selectedPage)),
               ),
             );
           },
@@ -105,15 +79,11 @@ class WidgetTree extends StatelessWidget {
           backgroundColor: Colors.green,
           child: const Icon(Icons.chat, color: Colors.white),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ChatbotPage()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotPage()));
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
-        
-      );
+    );
   }
 }

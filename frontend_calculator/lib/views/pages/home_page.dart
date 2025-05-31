@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_calculator/views/pages/analitical_page.dart';
+import 'package:frontend_calculator/views/pages/offer_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
@@ -9,41 +9,40 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildWelcomeHeader(),
-          const SizedBox(height: 24),
-          _buildQuickActions(context),
-          const SizedBox(height: 24),
-          _buildRecentCalculations(),
-        ],
-      ),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                _buildWelcomeHeader(),
+                const SizedBox(height: 24),
+                _buildQuickActions(context),
+                // const SizedBox(height: 24),
+                // _buildRecentCalculations(),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildWelcomeHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
       children: [
         Text(
           'Witaj w ECOPierogi!',
-          style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.green[800],
-          ),
+          style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
         ),
         const SizedBox(height: 8),
-        Text(
-          'Ostatnie logowanie: dzisiaj',
-          style: GoogleFonts.poppins(
-            color: Colors.grey[600],
-          ),
-        ),
+        Text('Ostatnie logowanie: dzisiaj', style: GoogleFonts.poppins(color: Colors.grey[600])),
       ],
     );
   }
@@ -52,13 +51,7 @@ class HomePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Szybkie akcje:',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text('Szybkie akcje:', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
         const SizedBox(height: 16),
         GridView.count(
           shrinkWrap: true,
@@ -76,10 +69,10 @@ class HomePage extends StatelessWidget {
             ),
             _buildActionCard(
               context,
-              icon: Icons.analytics,
-              title: 'Analizy',
+              icon: Icons.shopping_bag,
+              title: 'Oferta',
               color: Colors.orange,
-              page: const AnaliticalPage(),
+              page: const OfferPage(),
             ),
             _buildActionCard(
               context,
@@ -95,9 +88,7 @@ class HomePage extends StatelessWidget {
               color: Colors.green,
               onTap: () {
                 // TODO: Implement history
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Historia kalkulacji')),
-                );
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Historia kalkulacji')));
               },
             ),
           ],
@@ -116,19 +107,16 @@ class HomePage extends StatelessWidget {
   }) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: onTap ?? () {
-          if (page != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => page),
-            );
-          }
-        },
+        onTap:
+            onTap ??
+            () {
+              if (page != null) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+              }
+            },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -136,13 +124,7 @@ class HomePage extends StatelessWidget {
             children: [
               Icon(icon, size: 32, color: color),
               const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(title, textAlign: TextAlign.center, style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -154,13 +136,7 @@ class HomePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Ostatnie kalkulacje:',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text('Ostatnie kalkulacje:', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
         const SizedBox(height: 16),
         ListView.builder(
           shrinkWrap: true,
