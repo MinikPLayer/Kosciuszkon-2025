@@ -60,6 +60,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
       sellingPrice *= (1 + yearlyEnergyPriceIncreasePercentage / 100);
     }
 
+    // Mock loading
+    await Future.delayed(const Duration(seconds: 2));
+
     setState(() {
       isLoading = false;
     });
@@ -137,14 +140,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
               onChanged: (v) => singleYearEnergyConsumption = v,
             ),
             _buildNumberInput(
-              label: 'Cena zakupu energii w pierwszym roku (PLN/kWh)',
-              value: firstYearEnergyBuyingPrice,
-              onChanged: (v) => firstYearEnergyBuyingPrice = v,
-            ),
-            _buildNumberInput(
-              label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
-              value: firstYearEnergySellingPrice,
-              onChanged: (v) => firstYearEnergySellingPrice = v,
+              label: 'Całkowita moc instalacji (kW)',
+              value: fvSystemSizeKw,
+              onChanged: (v) => fvSystemSizeKw = v,
             ),
             _buildNumberInput(
               label: 'Koszt instalacji 1kW paneli (PLN/kW)',
@@ -152,37 +150,44 @@ class _CalculatorPageState extends State<CalculatorPage> {
               onChanged: (v) => fvSystemInstallationCostPerKw = v,
             ),
             _buildNumberInput(
-              label: 'Całkowita moc instalacji (kW)',
-              value: fvSystemSizeKw,
-              onChanged: (v) => fvSystemSizeKw = v,
-            ),
-            // _buildNumberInput(
-            //   label: 'Wydajność instalacji (%)',
-            //   value: _fvSystemOutputPercentage,
-            //   onChanged: (v) => _fvSystemOutputPercentage = v,
-            // ),
-            // _buildNumberInput(
-            //   label: 'Autokonsumpcja (%)',
-            //   value: _autoconsumptionPercentage,
-            //   onChanged: (v) => _autoconsumptionPercentage = v,
-            // ),
-            _buildNumberInput(
-              label: 'Roczny wzrost cen energii (%)',
-              value: yearlyEnergyPriceIncreasePercentage,
-              onChanged: (v) => yearlyEnergyPriceIncreasePercentage = v,
-            ),
-            _buildNumberInput(
               label: 'Liczba lat obliczeń',
               value: calculationYears.toDouble(),
               isInt: true,
               onChanged: (v) => calculationYears = v.toInt(),
+            ),
+            ExpansionTile(
+              title: const Text('Zaawansowane'),
+              childrenPadding: EdgeInsets.all(8.0),
+
+              children: [
+                _buildNumberInput(
+                  label: 'Cena zakupu energii w pierwszym roku (PLN/kWh)',
+                  value: firstYearEnergyBuyingPrice,
+                  onChanged: (v) => firstYearEnergyBuyingPrice = v,
+                ),
+                _buildNumberInput(
+                  label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
+                  value: firstYearEnergySellingPrice,
+                  onChanged: (v) => firstYearEnergySellingPrice = v,
+                ),
+                _buildNumberInput(
+                  label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
+                  value: firstYearEnergySellingPrice,
+                  onChanged: (v) => firstYearEnergySellingPrice = v,
+                ),
+                _buildNumberInput(
+                  label: 'Roczny wzrost cen energii (%)',
+                  value: yearlyEnergyPriceIncreasePercentage,
+                  onChanged: (v) => yearlyEnergyPriceIncreasePercentage = v,
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                 onPressed: isLoading ? null : _calculate,
-                child: isLoading ? const CircularProgressIndicator() : const Text('Oblicz'),
+                child: const Text('Oblicz'),
               ),
             ),
           ],
@@ -221,10 +226,6 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   Widget _buildResultsSection() {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (yearlyResults.isEmpty) {
       return Container();
     }
@@ -235,120 +236,141 @@ class _CalculatorPageState extends State<CalculatorPage> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: const Text('Zysk na przestrzeni lat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: 300,
-                child: BarChart(
-                  BarChartData(
-                    barGroups:
-                        entries.asMap().entries.map((entry) {
-                          final index = entry.key * everyNth;
-                          final year = entry.value;
-                          return BarChartGroupData(
-                            x: index,
-                            barRods: [
-                              BarChartRodData(
-                                toY: (year['without_pv']! - year['with_pv_full']!),
-                                color: (year['without_pv']! - year['with_pv_full']!) > 0 ? Colors.green : Colors.red,
-                                borderRadius: BorderRadius.circular(2),
-                                width: 200 / entries.length,
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+          child:
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: const Text(
+                          'Zysk na przestrzeni lat',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: 300,
+                          child: BarChart(
+                            BarChartData(
+                              barGroups:
+                                  entries.asMap().entries.map((entry) {
+                                    final index = entry.key * everyNth;
+                                    final year = entry.value;
+                                    return BarChartGroupData(
+                                      x: index,
+                                      barRods: [
+                                        BarChartRodData(
+                                          toY: (year['without_pv']! - year['with_pv_full']!),
+                                          color:
+                                              (year['without_pv']! - year['with_pv_full']!) > 0
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                          borderRadius: BorderRadius.circular(2),
+                                          width: 200 / entries.length,
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+
+                              barTouchData: BarTouchData(
+                                touchTooltipData: BarTouchTooltipData(
+                                  getTooltipItem:
+                                      (group, groupIndex, rod, rodIndex) => BarTooltipItem(
+                                        'Rok ${group.x + 1}\n',
+                                        const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                        children: [
+                                          TextSpan(
+                                            text:
+                                                'Zysk: \n${(entries[group.x]['without_pv']! - entries[group.x]['with_pv_full']!).toStringAsFixed(2)} zł\n',
+                                            style: const TextStyle(color: Colors.green, fontSize: 12),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                'Bez paneli: \n${entries[group.x]['without_pv']!.toStringAsFixed(2)} zł\n',
+                                            style: const TextStyle(color: Colors.red, fontSize: 12),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                'Z panelami: \n${entries[group.x]['with_pv']!.toStringAsFixed(2)} zł\n',
+                                            style: const TextStyle(color: Colors.blue, fontSize: 12),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                'Całkowity koszt z panelami: \n${entries[group.x]['with_pv_full']!.toStringAsFixed(2)} zł',
+                                            style: const TextStyle(color: Colors.lightBlue, fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                ),
+                              ),
+                              borderData: FlBorderData(show: true),
+                              gridData: FlGridData(show: true),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Text('Tabela obliczeń', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Koszt inwestycji: ${upfrontInvestmentCost.toStringAsFixed(2)} PLN',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text('Roczne koszty energii:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Table(
+                        border: TableBorder.all(),
+                        children: [
+                          const TableRow(
+                            children: [
+                              Padding(padding: EdgeInsets.all(8.0), child: Text('Rok', textAlign: TextAlign.center)),
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('Bez PV (PLN)', textAlign: TextAlign.center),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('Z PV (PLN)', textAlign: TextAlign.center),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text('Koszt całkowity z PV (PLN)', textAlign: TextAlign.center),
                               ),
                             ],
-                          );
-                        }).toList(),
-
-                    barTouchData: BarTouchData(
-                      touchTooltipData: BarTouchTooltipData(
-                        getTooltipItem:
-                            (group, groupIndex, rod, rodIndex) => BarTooltipItem(
-                              'Rok ${group.x + 1}\n',
-                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          ...entries.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final year = entry.value;
+                            return TableRow(
                               children: [
-                                TextSpan(
-                                  text:
-                                      'Zysk: \n${(entries[group.x]['without_pv']! - entries[group.x]['with_pv_full']!).toStringAsFixed(2)} zł\n',
-                                  style: const TextStyle(color: Colors.green, fontSize: 12),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text((index + 1).toString(), textAlign: TextAlign.center),
                                 ),
-                                TextSpan(
-                                  text: 'Bez paneli: \n${entries[group.x]['without_pv']!.toStringAsFixed(2)} zł\n',
-                                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(year['without_pv']!.toStringAsFixed(2), textAlign: TextAlign.center),
                                 ),
-                                TextSpan(
-                                  text: 'Z panelami: \n${entries[group.x]['with_pv']!.toStringAsFixed(2)} zł\n',
-                                  style: const TextStyle(color: Colors.blue, fontSize: 12),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(year['with_pv']!.toStringAsFixed(2), textAlign: TextAlign.center),
                                 ),
-                                TextSpan(
-                                  text:
-                                      'Całkowity koszt z panelami: \n${entries[group.x]['with_pv_full']!.toStringAsFixed(2)} zł',
-                                  style: const TextStyle(color: Colors.lightBlue, fontSize: 12),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(year['with_pv_full']!.toStringAsFixed(2), textAlign: TextAlign.center),
                                 ),
                               ],
-                            ),
-                      ),
-                    ),
-                    borderData: FlBorderData(show: true),
-                    gridData: FlGridData(show: true),
-                  ),
-                ),
-              ),
-            ),
-            const Text('Tabela obliczeń', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Text(
-              'Koszt inwestycji: ${upfrontInvestmentCost.toStringAsFixed(2)} PLN',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-            const Text('Roczne koszty energii:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Table(
-              border: TableBorder.all(),
-              children: [
-                const TableRow(
-                  children: [
-                    Padding(padding: EdgeInsets.all(8.0), child: Text('Rok', textAlign: TextAlign.center)),
-                    Padding(padding: EdgeInsets.all(8.0), child: Text('Bez PV (PLN)', textAlign: TextAlign.center)),
-                    Padding(padding: EdgeInsets.all(8.0), child: Text('Z PV (PLN)', textAlign: TextAlign.center)),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('Koszt całkowity z PV (PLN)', textAlign: TextAlign.center),
-                    ),
-                  ],
-                ),
-                ...entries.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final year = entry.value;
-                  return TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text((index + 1).toString(), textAlign: TextAlign.center),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(year['without_pv']!.toStringAsFixed(2), textAlign: TextAlign.center),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(year['with_pv']!.toStringAsFixed(2), textAlign: TextAlign.center),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(year['with_pv_full']!.toStringAsFixed(2), textAlign: TextAlign.center),
+                            );
+                          }).toList(),
+                        ],
                       ),
                     ],
-                  );
-                }).toList(),
-              ],
-            ),
-          ],
+                  ),
         ),
       ),
     );
