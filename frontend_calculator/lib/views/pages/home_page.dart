@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/analitical_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
@@ -10,6 +11,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
+      
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,7 +30,7 @@ class HomePage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Witaj w SolarExpert!',
+          'Witaj w ECOPierogi!',
           style: GoogleFonts.poppins(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -72,18 +74,18 @@ class HomePage extends StatelessWidget {
               color: Colors.blue,
               page: const CalculatorPage(),
             ),
-            // _buildActionCard(
-            //   context,
-            //   icon: Icons.analytics,
-            //   title: 'Analizy',
-            //   color: Colors.orange,
-            //   page: const AnalysisPage(),
-            // ),
+            _buildActionCard(
+              context,
+              icon: Icons.analytics,
+              title: 'Analizy',
+              color: Colors.orange,
+              page: const AnaliticalPage(),
+            ),
             _buildActionCard(
               context,
               icon: Icons.book,
               title: 'Słownik',
-              color: Colors.purple,
+              color: Colors.purple.shade100,
               page: const DictionaryPage(),
             ),
             _buildActionCard(

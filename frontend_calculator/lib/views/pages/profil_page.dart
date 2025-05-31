@@ -224,16 +224,23 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const Divider(height: 16),
               _buildDropdown('Województwo', _voivodeship, [
-                'Dolnośląskie', 'Kujawsko-Pomorskie', 'Lubelskie', /* ... */
+                 'Dolnośląskie', 'Kujawsko-Pomorskie', 'Lubelskie', 'Lubuskie', 'Łódzkie',
+    'Małopolskie', 'Mazowieckie', 'Opolskie', 'Podkarpackie', 'Podlaskie',
+    'Pomorskie', 'Śląskie', 'Świętokrzyskie', 'Warmińsko-Mazurskie', 
+    'Wielkopolskie', 'Zachodniopomorskie'
               ], (value) => setState(() => _voivodeship = value!)),
               _buildDropdown('Typ budynku', _buildingType, [
-                'Dom jednorodzinny', 'Budynek gospodarczy', /* ... */
+                    'Dom jednorodzinny', 'Budynek gospodarczy', 
+    'Hala przemysłowa', 'Gruntowa instalacja'
               ], (value) => setState(() => _buildingType = value!)),
               _buildDropdown('Orientacja', _orientation, [
-                'Południe', 'Wschód', 'Zachód', /* ... */
+                    'Południe', 'Wschód', 'Zachód', 'Północ', 
+    'Północny zachód', 'Południowy zachód', 
+    'Południowy wschód', 'Północny wschód'
               ], (value) => setState(() => _orientation = value!)),
               _buildDropdown('Pokrycie dachu', _roofType, [
-                'Dachówka ceramiczna', 'Blachodachówka', /* ... */
+                    'Dachówka ceramiczna', 'Blachodachówka', 
+    'Papa', 'Blacha trapezowa', 'Inne'
               ], (value) => setState(() => _roofType = value!)),
               _buildRoofAngleSlider(),
               const SizedBox(height: 16),

@@ -2,6 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:frontend_calculator/views/pages/login_page.dart';
 import 'package:frontend_calculator/views/pages/registration_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+void main() {
+  runApp(SolarCalculatorApp());
+}
+
+class SolarCalculatorApp extends StatelessWidget {
+  const SolarCalculatorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Kalkulator Fotowoltaiki',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: HomeScreen(),
+    );
+  }
+}
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -119,7 +138,6 @@ class HomeScreen extends StatelessWidget {
             _buildFeatureCard(Icons.calculate, 'Kalkulator PV'),
             _buildFeatureCard(Icons.analytics, 'Analizy'),
             _buildFeatureCard(Icons.book, 'Słownik'),
-            _buildFeatureCard(Icons.map, 'Mapa nasłonecznienia'),
           ],
         ),
       ],
@@ -150,4 +168,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-

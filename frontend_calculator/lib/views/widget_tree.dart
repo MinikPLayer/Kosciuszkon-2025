@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/analitical_page.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
 import 'package:frontend_calculator/views/pages/home_page.dart';
@@ -10,7 +11,8 @@ import 'widgets/navbar_widget.dart';
 List<Widget> pages = [
   const HomePage(),
   const CalculatorPage(),
-  const DictionaryPage()
+  const DictionaryPage(),
+  const AnaliticalPage()
 ];
 
 class WidgetTree extends StatelessWidget {
@@ -20,7 +22,7 @@ class WidgetTree extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white.withGreen(22),
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
             'Pierogi PV',
@@ -31,6 +33,7 @@ class WidgetTree extends StatelessWidget {
             ),
           ),
           centerTitle: true,
+
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -47,7 +50,7 @@ class WidgetTree extends StatelessWidget {
           actions: [
             IconButton(
               icon: Icon(
-                Icons.settings,
+                Icons.person,
                 color: Colors.greenAccent,
                 size: 28,
               ),
