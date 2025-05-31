@@ -14,13 +14,15 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  Future<void> _login(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
+  Future<void> _login(BuildContext context, {bool bypassValidation = false}) async {
+    if (bypassValidation || _formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
+
       // Symulacja opóźnienia logowania
-      await Future.delayed(Duration(seconds: 1));
-      
+      if (!bypassValidation) {
+        await Future.delayed(Duration(seconds: 1));
+      }
+
       // TODO: Tutaj dodaj rzeczywistą logikę autentykacji (np. Firebase)
       // try {
       //   await AuthService.login(_emailController.text, _passwordController.text);
@@ -32,10 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       //   return;
       // }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => WidgetTree()),
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WidgetTree()));
     }
   }
 
@@ -49,97 +48,106 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Logowanie do kalkulatora PV'),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text('Logowanie do kalkulatora PV'), backgroundColor: Colors.green),
       body: Container(
         color: Colors.green[50],
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.energy_savings_leaf,
-                    size: 80,
-                    color: Colors.green,
-                  ),
-                  const SizedBox(height: 30),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Podaj adres email';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Podaj poprawny adres email';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Hasło',
-                      prefixIcon: Icon(Icons.lock),
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Podaj hasło';
-                      }
-                      if (value.length < 6) {
-                        return 'Hasło musi mieć co najmniej 6 znaków';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            const SizedBox(height: 20),
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.energy_savings_leaf, size: 80, color: Colors.green),
+                      const SizedBox(height: 30),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Podaj adres email';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Podaj poprawny adres email';
+                          }
+                          return null;
+                        },
                       ),
-                      onPressed: _isLoading ? null : () => _login(context),
-                      child: _isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Zaloguj się',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                    ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: const InputDecoration(
+                          labelText: 'Hasło',
+                          prefixIcon: Icon(Icons.lock),
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Podaj hasło';
+                          }
+                          if (value.length < 6) {
+                            return 'Hasło musi mieć co najmniej 6 znaków';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                            onPressed: _isLoading ? null : () => _login(context),
+                            child:
+                                _isLoading
+                                    ? const CircularProgressIndicator(color: Colors.white)
+                                    : const Text('Zaloguj się', style: TextStyle(fontSize: 16)),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // TODO: Dodać nawigację do resetowania hasła
+                        },
+                        child: const Text('Zapomniałeś hasła?', style: TextStyle(color: Colors.green)),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () {
-                      // TODO: Dodać nawigację do resetowania hasła
-                    },
-                    child: const Text(
-                      'Zapomniałeś hasła?',
-                      style: TextStyle(color: Colors.green),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade100),
+                  onPressed: _isLoading ? null : () => _login(context, bypassValidation: true),
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Demo login', style: TextStyle(fontSize: 16)),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
