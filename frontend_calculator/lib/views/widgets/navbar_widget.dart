@@ -73,7 +73,7 @@ class _NavbarWidgetState extends State<NavbarWidget> with SingleTickerProviderSt
                     child: child,
                   );
                 },
-                child: selectedPage == 3
+                child: selectedPage == 2
                     ? const Icon(Icons.book, key: ValueKey('selected'))
                     : const Icon(Icons.book_outlined, key: ValueKey('unselected')),
               ),
@@ -94,23 +94,6 @@ class _NavbarWidgetState extends State<NavbarWidget> with SingleTickerProviderSt
               ),
               label: 'Analizy',
             ),
-
-             BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 3
-                    ? const Icon(Icons.bar_chart, key: ValueKey('selected'))
-                    : const Icon(Icons.bar_chart_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'Statystyki',
-            ),
-
           ],
           currentIndex: selectedPage,
           type: BottomNavigationBarType.fixed,
