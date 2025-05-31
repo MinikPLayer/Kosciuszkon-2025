@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_calculator/views/pages/login_page.dart';
 import 'package:frontend_calculator/views/pages/registration_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 void main() {
   runApp(SolarCalculatorApp());
 }
@@ -9,13 +10,44 @@ void main() {
 class SolarCalculatorApp extends StatelessWidget {
   const SolarCalculatorApp({super.key});
 
+  Color darken(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final hsl = HSLColor.fromColor(color);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+
+    return hslDark.toColor();
+  }
+
+  Color lighten(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final hsl = HSLColor.fromColor(color);
+    final hslLight = hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+
+    return hslLight.toColor();
+  }
+
+  Color mix(Color color1, Color color2, [double amount = .5]) {
+    assert(amount >= 0 && amount <= 1);
+
+    final r = (color1.red * (1 - amount) + color2.red * amount).round();
+    final g = (color1.green * (1 - amount) + color2.green * amount).round();
+    final b = (color1.blue * (1 - amount) + color2.blue * amount).round();
+
+    return Color.fromARGB((color1.alpha * (1 - amount) + color2.alpha * amount).round(), r, g, b);
+  }
+
   @override
   Widget build(BuildContext context) {
+    var darkBackgroundColor = darken(Colors.grey, 0.6);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kalkulator Fotowoltaiki',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
+      theme: ThemeData.from(colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.light)),
+      darkTheme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green, brightness: Brightness.dark),
       ),
       home: HomeScreen(),
     );
@@ -28,7 +60,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green[50],
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -36,19 +67,12 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.energy_savings_leaf, 
-                  size: 100, 
-                  color: Colors.green
-                ),
+                const Icon(Icons.energy_savings_leaf, size: 100, color: Colors.green),
                 const SizedBox(height: 20),
                 Text(
                   'Kalkulator Opłacalności Energii Słonecznej',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[800],
-                  ),
+                  style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
                 ),
                 const SizedBox(height: 40),
                 _buildAuthButtons(context),
@@ -70,23 +94,19 @@ class HomeScreen extends StatelessWidget {
           height: 50,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             child: Text(
               'Zaloguj się',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.w600,
+                fontSize: 16,
               ),
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
             },
           ),
         ),
@@ -98,22 +118,11 @@ class HomeScreen extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.green,
               side: const BorderSide(color: Colors.green),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text(
-              'Załóż konto',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: Text('Załóż konto', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RegistrationPage()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
             },
           ),
         ),
@@ -126,11 +135,7 @@ class HomeScreen extends StatelessWidget {
       children: [
         Text(
           'Odkryj możliwości:',
-          style: GoogleFonts.poppins(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.green[800],
-          ),
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.green[800]),
         ),
         const SizedBox(height: 20),
         Wrap(
@@ -149,21 +154,14 @@ class HomeScreen extends StatelessWidget {
   Widget _buildFeatureCard(IconData icon, String title) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Icon(icon, size: 40, color: Colors.green),
             const SizedBox(height: 8),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
           ],
         ),
       ),
