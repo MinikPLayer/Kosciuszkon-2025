@@ -1,1 +1,46 @@
-Panele słoneczne przekształcają energię słoneczną w elektryczną dzięki efektowi fotowoltaicznemu. Fotony ze światła słonecznego wybijają elektrony w ogniwach krzemowych, tworząc przepływ prądu.
+Fotowoltaika to technologia przetwarzająca światło słoneczne na energię elektryczną przy pomocy paneli fotowoltaicznych.
+
+Panele fotowoltaiczne składają się z ogniw wykonanych z materiałów półprzewodnikowych, najczęściej krzemu, które generują prąd stały pod wpływem światła słonecznego.
+
+Instalacja fotowoltaiczna zazwyczaj zawiera panele, falownik (inwerter), system montażowy oraz okablowanie.
+
+Falownik przekształca prąd stały produkowany przez panele na prąd zmienny, który może być używany w domowej sieci elektrycznej.
+
+Główne zalety fotowoltaiki to:
+- obniżenie rachunków za prąd,
+- niezależność energetyczna,
+- ekologia i redukcja emisji CO2,
+- wzrost wartości nieruchomości.
+
+Montaż paneli fotowoltaicznych wymaga odpowiedniej ekspozycji dachu na słońce, najlepiej na południe, oraz minimalizacji zacienienia.
+
+Średni okres zwrotu inwestycji w fotowoltaikę wynosi od 6 do 12 lat, w zależności od warunków lokalnych i kosztów instalacji.
+
+Fotowoltaika działa zarówno latem, jak i zimą, ale wydajność spada w pochmurne dni i przy niskim nasłonecznieniu.
+
+Panele fotowoltaiczne wymagają minimalnej konserwacji, głównie czyszczenia powierzchni i kontroli technicznej.
+
+Systemy fotowoltaiczne mogą być połączone z magazynami energii (akumulatorami), które pozwalają na gromadzenie nadwyżek energii na późniejsze użycie.
+
+W Polsce istnieją różne programy dofinansowania i ulgi podatkowe wspierające inwestycję w instalacje fotowoltaiczne.
+
+Net-metering i net-billing to popularne modele rozliczeń energii elektrycznej z instalacji fotowoltaicznej w Polsce.
+
+Pytanie: Jak działa fotowoltaika?
+Odpowiedź: Fotowoltaika przetwarza światło słoneczne na energię elektryczną za pomocą paneli z ogniwami krzemowymi.
+
+Pytanie: Co to jest falownik?
+Odpowiedź: Falownik zamienia prąd stały wytworzony przez panele na prąd zmienny, który można używać w domu.
+
+Pytanie: Ile trwa zwrot inwestycji?
+Odpowiedź: Zazwyczaj od 6 do 12 lat, zależnie od wielu czynników, takich jak nasłonecznienie i koszt instalacji.
+
+Pytanie: Czy panele działają zimą?
+Odpowiedź: Tak, ale ich wydajność jest niższa w pochmurne dni i zimą.
+
+Pytanie: Czy trzeba czyścić panele?
+Odpowiedź: Tak, należy je regularnie czyścić, aby utrzymać wydajność.
+
+Pytanie: Czy mogę podłączyć baterię do instalacji?
+Odpowiedź: Tak, magazyn energii pozwala na przechowywanie nadwyżek energii do późniejszego użycia.
+
