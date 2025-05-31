@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:frontend_calculator/views/widgets/line_chart_sample2.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

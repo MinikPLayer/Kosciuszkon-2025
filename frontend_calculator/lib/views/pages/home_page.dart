@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_calculator/views/pages/offer_page.dart';
+import 'package:frontend_calculator/views/pages/offer_search_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
@@ -72,7 +72,7 @@ class HomePage extends StatelessWidget {
               icon: Icons.shopping_bag,
               title: 'Oferta',
               color: Colors.orange,
-              page: const OfferPage(),
+              page: const OfferSearchPage(),
             ),
             _buildActionCard(
               context,
@@ -132,32 +132,32 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentCalculations() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Ostatnie kalkulacje:', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 16),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 3, // Tymczasowo - zastąp rzeczywistymi danymi
-          itemBuilder: (context, index) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: ListTile(
-                leading: const Icon(Icons.calculate, color: Colors.green),
-                title: Text('Kalkulacja ${index + 1}'),
-                subtitle: Text('Data: ${DateTime.now().subtract(Duration(days: index)).toString().split(' ')[0]}'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // TODO: Implement calculation details
-                },
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
+  // Widget _buildRecentCalculations() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text('Ostatnie kalkulacje:', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600)),
+  //       const SizedBox(height: 16),
+  //       ListView.builder(
+  //         shrinkWrap: true,
+  //         physics: const NeverScrollableScrollPhysics(),
+  //         itemCount: 3, // Tymczasowo - zastąp rzeczywistymi danymi
+  //         itemBuilder: (context, index) {
+  //           return Card(
+  //             margin: const EdgeInsets.only(bottom: 12),
+  //             child: ListTile(
+  //               leading: const Icon(Icons.calculate, color: Colors.green),
+  //               title: Text('Kalkulacja ${index + 1}'),
+  //               subtitle: Text('Data: ${DateTime.now().subtract(Duration(days: index)).toString().split(' ')[0]}'),
+  //               trailing: const Icon(Icons.chevron_right),
+  //               onTap: () {
+  //                 // TODO: Implement calculation details
+  //               },
+  //             ),
+  //           );
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 }
