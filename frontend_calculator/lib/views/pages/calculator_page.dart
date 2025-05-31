@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class CalculatorPage extends StatefulWidget {
-  const CalculatorPage({Key? key}) : super(key: key);
+  const CalculatorPage({super.key});
 
   @override
   _CalculatorPageState createState() => _CalculatorPageState();
@@ -11,7 +11,7 @@ class CalculatorPage extends StatefulWidget {
 
 class _CalculatorPageState extends State<CalculatorPage> {
   final _formKey = GlobalKey<FormState>();
-  final _apiUrl = 'http://your-backend-url.com/calculate'; // Zastąp prawdziwym URL
+  final _apiUrl = 'http://127.0.0.1:8000/api/calculate/'; 
 
   // Dane wejściowe
   double _singleYearEnergyConsumption = 1713.0;
@@ -40,8 +40,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
     try {
       final response = await http.post(
         Uri.parse(_apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
+        body: jsonEncode({'parameters': {
           'single_year_energy_consumption': _singleYearEnergyConsumption,
           'first_year_energy_buying_price': _firstYearEnergyBuyingPrice,
           'first_year_energy_selling_price': _firstYearEnergySellingPrice,
@@ -51,6 +50,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
           'autoconsumption_percentage': _autoconsumptionPercentage,
           'yearly_energy_price_increase_percentage': _yearlyEnergyPriceIncreasePercentage,
           'years': _calculationYears,
+          }
         }),
       );
 
@@ -287,7 +287,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       ),
                     ],
                   );
-                }).toList(),
+                }),
               ],
             ),
           ],

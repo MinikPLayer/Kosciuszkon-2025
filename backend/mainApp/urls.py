@@ -21,5 +21,5 @@ from django.urls import path
 urlpatterns = [
     # path('user/', views.OneUserData.as_view(), name='user'),
     path('chat/', views.ChatAPI.as_view(), name='chat'),
-    path('api/calculate/', calculate_pv, name='calculate_pv'),
+    path('calculate/', views.SimpleCalculator.as_view(), name='calculate_simple'),
 ]

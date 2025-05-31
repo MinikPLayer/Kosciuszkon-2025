@@ -6,9 +6,11 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework.parsers import JSONParser
+from mainApp.Kalkulator_Python.simple_calc import SimpleCalc, SimpleCalcData
 from mainApp.models import AppUser
 from mainApp.serializers import UserRegisterSerializer, UserSerializer
+import json
 
 UserModel = get_user_model()
 
@@ -136,59 +138,77 @@ class ChatAPI(APIView):
 
         return Response({"answer": response}, status=status.HTTP_200_OK)
 
-@csrf_exempt
-@require_POST
-def calculate_pv(request):
-    try:
-        data = json.loads(request.body)
-        
-        # Walidacja danych wejściowych
-        required_fields = [
-            'single_year_energy_consumption',
-            'first_year_energy_buying_price',
-            'first_year_energy_selling_price',
-            'fv_system_installation_cost_per_kw',
-            'fv_system_size_kw',
-            'fv_system_output_percentage',
-            'autoconsumption_percentage',
-            'yearly_energy_price_increase_percentage',
-            'years'
-        ]
-        
-        for field in required_fields:
-            if field not in data:
-                return JsonResponse({'error': f'Brakujące pole: {field}'}, status=400)
-        
-        # Przygotowanie danych do obliczeń
-        calc_data = SimpleCalcData(
-            single_year_energy_consumption=float(data['single_year_energy_consumption']),
-            first_year_energy_buying_price=float(data['first_year_energy_buying_price']),
-            first_year_energy_selling_price=float(data['first_year_energy_selling_price']),
-            fv_system_installation_cost_per_kw=float(data['fv_system_installation_cost_per_kw']),
-            fv_system_size_kw=float(data['fv_system_size_kw']),
-            fv_system_output_percentage=float(data['fv_system_output_percentage']),
-            autoconsumption_percentage=float(data['autoconsumption_percentage']),
-            yearly_energy_price_increase_percentage=float(data['yearly_energy_price_increase_percentage'])
-        )
-        
-        years = int(data['years'])
-        result = SimpleCalc.calculate(calc_data, years)
-        
-        # Przygotowanie odpowiedzi
-        response_data = {
-            'upfront_investment_cost': result.upfront_investment_cost,
-            'energy_prices_per_year': [
-                {
-                    'energy_price_without_fotovoltaic': year.energy_price_without_fotovoltaic,
-                    'energy_price_with_fotovoltaic': year.energy_price_with_fotovoltaic
-                }
-                for year in result.energy_prices_per_year
+class SimpleCalculator(APIView):
+    parser_classes = [JSONParser]
+    
+    def post(self, request):
+        try:
+            print("request.body (full):", request.body)
+            print("request.data (full):", request.data)
+            data = request.data.get("parameters")
+           
+            # Walidacja danych wejściowych
+            required_fields = [
+                'single_year_energy_consumption',
+                'first_year_energy_buying_price',
+                'first_year_energy_selling_price',
+                'fv_system_installation_cost_per_kw',
+                'fv_system_size_kw',
+                'fv_system_output_percentage',
+                'autoconsumption_percentage',
+                'yearly_energy_price_increase_percentage',
+                'years'
             ]
-        }
-        
-        return JsonResponse(response_data)
-        
-    except ValueError as e:
-        return JsonResponse({'error': str(e)}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': f'Wewnętrzny błąd serwera: {str(e)}'}, status=500)
+            
+            for field in required_fields:
+                if field not in data:
+                    return Response(
+                        {"error": f"Brakujące pole: {field}"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+     
+            # Przygotowanie danych do obliczeń
+            calc_data = SimpleCalcData(
+                single_year_energy_consumption=float(data['single_year_energy_consumption']),
+                first_year_energy_buying_price=float(data['first_year_energy_buying_price']),
+                first_year_energy_selling_price=float(data['first_year_energy_selling_price']),
+                fv_system_installation_cost_per_kw=float(data['fv_system_installation_cost_per_kw']),
+                fv_system_size_kw=float(data['fv_system_size_kw']),
+                fv_system_output_percentage=float(data['fv_system_output_percentage']),
+                autoconsumption_percentage=float(data['autoconsumption_percentage']),
+                yearly_energy_price_increase_percentage=float(data['yearly_energy_price_increase_percentage'])
+            )
+            
+            years = int(data['years'])
+            result = SimpleCalc.calculate(calc_data, years)
+            
+            # Przygotowanie odpowiedzi
+            response_data = {
+                'upfront_investment_cost': result.upfront_investment_cost,
+                'energy_prices_per_year': [
+                    {
+                        'year': idx + 1,
+                        'energy_price_without_fotovoltaic': year.energy_price_without_fotovoltaic,
+                        'energy_price_with_fotovoltaic': year.energy_price_with_fotovoltaic,
+                        'savings': year.energy_price_without_fotovoltaic - year.energy_price_with_fotovoltaic
+                    }
+                    for idx, year in enumerate(result.energy_prices_per_year)
+                ],
+                'total_savings': sum(
+                    year.energy_price_without_fotovoltaic - year.energy_price_with_fotovoltaic 
+                    for year in result.energy_prices_per_year
+                )
+            }
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+            
+        except ValueError as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Wewnętrzny błąd serwera: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
