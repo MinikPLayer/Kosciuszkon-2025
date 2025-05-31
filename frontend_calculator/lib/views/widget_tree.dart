@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_calculator/views/pages/analitical_page.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
+import 'package:frontend_calculator/views/pages/chatbot_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
 import 'package:frontend_calculator/views/pages/home_page.dart';
 import 'package:frontend_calculator/views/pages/profil_page.dart';
@@ -99,8 +100,20 @@ class WidgetTree extends StatelessWidget {
             );
           },
         ),
-        bottomNavigationBar: const NavbarWidget()
+        bottomNavigationBar: const NavbarWidget(),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.chat, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChatbotPage()),
+            );
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
-    );
+        
+      );
   }
 }

@@ -127,11 +127,44 @@ class ChatAPI(APIView):
     def post(self, request):
         prompt = request.data.get("prompt")
 
-        response = ollama.generate(
-            model='mistral',
-            prompt="Jak działa fotowoltaika?",
-            system=prompt,
-            options={'temperature': 0.7}
-        )
+        # Wczytaj wiedzę o fotowoltaice
+        knowledge = self.load_knowledge('wiedza_o_fotowoltaice.txt')
+        
+        system_prompt = f"""
+        Jesteś ekspertem od energii słonecznej. 
+        Odpowiadaj na pytania użytkownika {request.user.email} korzystając z tej wiedzy:
+        {knowledge}
+        Jeśli nie znasz odpowiedzi, powiedz że nie wiesz.
+        Bądź zwięzły i konkretny.
+        """
 
+
+        try:
+            response = ollama.generate(
+                model='mistral',
+                prompt=prompt,
+                system=system_prompt,
+                options={'temperature': 0.7}
+            )
+            
+            return Response({
+                "answer": response['response'],
+                "model": "mistral",
+                "tokens_used": response.get('total_duration', 0)
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+    def load_knowledge(self, file_path):
+        """Wczytuje wiedzę z pliku tekstowego"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"Plik {file_path} nie istnieje!")
+            return ""
         return Response({"answer": response}, status=status.HTTP_200_OK)
