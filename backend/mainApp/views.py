@@ -135,3 +135,60 @@ class ChatAPI(APIView):
         )
 
         return Response({"answer": response}, status=status.HTTP_200_OK)
+
+@csrf_exempt
+@require_POST
+def calculate_pv(request):
+    try:
+        data = json.loads(request.body)
+        
+        # Walidacja danych wejściowych
+        required_fields = [
+            'single_year_energy_consumption',
+            'first_year_energy_buying_price',
+            'first_year_energy_selling_price',
+            'fv_system_installation_cost_per_kw',
+            'fv_system_size_kw',
+            'fv_system_output_percentage',
+            'autoconsumption_percentage',
+            'yearly_energy_price_increase_percentage',
+            'years'
+        ]
+        
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({'error': f'Brakujące pole: {field}'}, status=400)
+        
+        # Przygotowanie danych do obliczeń
+        calc_data = SimpleCalcData(
+            single_year_energy_consumption=float(data['single_year_energy_consumption']),
+            first_year_energy_buying_price=float(data['first_year_energy_buying_price']),
+            first_year_energy_selling_price=float(data['first_year_energy_selling_price']),
+            fv_system_installation_cost_per_kw=float(data['fv_system_installation_cost_per_kw']),
+            fv_system_size_kw=float(data['fv_system_size_kw']),
+            fv_system_output_percentage=float(data['fv_system_output_percentage']),
+            autoconsumption_percentage=float(data['autoconsumption_percentage']),
+            yearly_energy_price_increase_percentage=float(data['yearly_energy_price_increase_percentage'])
+        )
+        
+        years = int(data['years'])
+        result = SimpleCalc.calculate(calc_data, years)
+        
+        # Przygotowanie odpowiedzi
+        response_data = {
+            'upfront_investment_cost': result.upfront_investment_cost,
+            'energy_prices_per_year': [
+                {
+                    'energy_price_without_fotovoltaic': year.energy_price_without_fotovoltaic,
+                    'energy_price_with_fotovoltaic': year.energy_price_with_fotovoltaic
+                }
+                for year in result.energy_prices_per_year
+            ]
+        }
+        
+        return JsonResponse(response_data)
+        
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Wewnętrzny błąd serwera: {str(e)}'}, status=500)
