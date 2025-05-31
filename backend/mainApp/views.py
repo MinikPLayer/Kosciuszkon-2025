@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import JSONParser
-from mainApp.Kalkulator_Python.simple_calc import SimpleCalc, SimpleCalcData
+from mainApp.Kalkulator_Python.advanced_calc import AdvancedCalc, AdvancedCalcData, load_data_from_files
 from mainApp.models import AppUser
 from mainApp.serializers import UserRegisterSerializer, UserSerializer
 import json
@@ -157,25 +157,30 @@ class ChatAPI(APIView):
         return Response({"answer": response['response']}, status=status.HTTP_200_OK)
 
 
-class SimpleCalculator(APIView):
-    parser_classes = [JSONParser]
+class AdvanceCalculator(APIView):
+    parser_classes = [JSONParser, MultiPartParser]
     
     def post(self, request):
         try:
-            print("request.body (full):", request.body)
-            print("request.data (full):", request.data)
-            data = request.data.get("parameters")
-           
-            # Walidacja danych wejściowych
+            # Handle CSV file uploads if present
+            consumption_data, fv_production_data = load_data_from_files()
+            
+            
+            # Get parameters from request data
+            data = request.data.get('parameters', {})
+            if isinstance(data, str):
+                data = json.loads(data)
+            
+            # Required fields validation
             required_fields = [
-                'single_year_energy_consumption',
+                'fv_system_size_kw',
+                'energy_storage_size_kwh',
                 'first_year_energy_buying_price',
                 'first_year_energy_selling_price',
                 'fv_system_installation_cost_per_kw',
-                'fv_system_size_kw',
-                'fv_system_output_percentage',
-                'autoconsumption_percentage',
                 'yearly_energy_price_increase_percentage',
+                'fv_degradation_percentage_per_year',
+                'energy_storage_degradation_percentage_per_year',
                 'years'
             ]
             
@@ -185,37 +190,59 @@ class SimpleCalculator(APIView):
                         {"error": f"Brakujące pole: {field}"},
                         status=status.HTTP_400_BAD_REQUEST
                     )
-     
-            # Przygotowanie danych do obliczeń
-            calc_data = SimpleCalcData(
-                single_year_energy_consumption=float(data['single_year_energy_consumption']),
+            
+            # Prepare consumption and production functions
+            def consumption_func(calc_data, day_of_year, hour_of_day):
+                key = (day_of_year, hour_of_day)
+                if key in consumption_data:
+                    return consumption_data[key]
+                return float(data.get('default_consumption', 1713 / (24 * 365)))
+            
+            def production_func(calc_data, day_of_year, hour_of_day):
+                key = (day_of_year, hour_of_day)
+                if key in fv_production_data:
+                    return fv_production_data[key]
+                # Default production pattern (peaks at noon)
+                diff = hour_of_day - 6
+                normalized_hour = (diff / 6.0) - 1
+                v = 1 - abs(normalized_hour)
+                return max(0.0, v)
+            
+            # Create calculation data
+            calc_data = AdvancedCalcData(
+                fv_system_size_kw=float(data['fv_system_size_kw']),
+                energy_storage_size_kwh=float(data['energy_storage_size_kwh']),
+                consumption_kwh_at_time_func=consumption_func,
+                fv_production_kwh_per_panel_at_time_func=production_func,
                 first_year_energy_buying_price=float(data['first_year_energy_buying_price']),
                 first_year_energy_selling_price=float(data['first_year_energy_selling_price']),
                 fv_system_installation_cost_per_kw=float(data['fv_system_installation_cost_per_kw']),
-                fv_system_size_kw=float(data['fv_system_size_kw']),
-                fv_system_output_percentage=float(data['fv_system_output_percentage']),
-                autoconsumption_percentage=float(data['autoconsumption_percentage']),
-                yearly_energy_price_increase_percentage=float(data['yearly_energy_price_increase_percentage'])
+                yearly_energy_price_increase_percentage=float(data['yearly_energy_price_increase_percentage']),
+                fv_degradation_percentage_per_year=float(data['fv_degradation_percentage_per_year']),
+                energy_storage_degradation_percentage_per_year=float(data['energy_storage_degradation_percentage_per_year'])
             )
             
             years = int(data['years'])
-            result = SimpleCalc.calculate(calc_data, years)
+            result = AdvancedCalc.calculate(calc_data, years)
             
-            # Przygotowanie odpowiedzi
+            # Prepare response
             response_data = {
                 'upfront_investment_cost': result.upfront_investment_cost,
-                'energy_prices_per_year': [
+                'results_per_year': [
                     {
                         'year': idx + 1,
-                        'energy_price_without_fotovoltaic': year.energy_price_without_fotovoltaic,
-                        'energy_price_with_fotovoltaic': year.energy_price_with_fotovoltaic,
-                        'savings': year.energy_price_without_fotovoltaic - year.energy_price_with_fotovoltaic
+                        'non_fv_price': year.non_fv_price,
+                        'fv_price': year.fv_price,
+                        'savings': year.non_fv_price - year.fv_price,
+                        'es_charge_kwh': year.es_charge_kwh,
+                        'consumption_kwh': year.consumption_kwh,
+                        'production_kwh': year.production_kwh
                     }
-                    for idx, year in enumerate(result.energy_prices_per_year)
+                    for idx, year in enumerate(result.results_per_year)
                 ],
                 'total_savings': sum(
-                    year.energy_price_without_fotovoltaic - year.energy_price_with_fotovoltaic 
-                    for year in result.energy_prices_per_year
+                    year.non_fv_price - year.fv_price 
+                    for year in result.results_per_year
                 )
             }
             
@@ -231,3 +258,23 @@ class SimpleCalculator(APIView):
                 {"error": f"Wewnętrzny błąd serwera: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+    
+    def load_csv_data(self, path):
+        ret = {}
+        with open(path, 'r') as file:
+            print(f"Loading data from {path}")
+            reader = csv.reader(file)
+            # Skip first row (header)
+            next(reader, None)
+            for row in reader:
+                # Skip empty rows
+                if not row or len(row) < 3 or not row[0].isdigit():
+                    continue
+
+                day_of_year = int(row[0])
+                hour_of_day = int(row[1])
+                data = float(row[2])
+                ret[(day_of_year, hour_of_day)] = data
+
+        
+        return ret

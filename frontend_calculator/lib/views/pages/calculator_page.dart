@@ -29,7 +29,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   List<Map<String, double>> yearlyResults = [];
   bool isLoading = false;
 
-  Future<void> _calculate() async {
+Future<void> _calculate() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -37,74 +37,80 @@ class _CalculatorPageState extends State<CalculatorPage> {
       yearlyResults.clear();
     });
 
-    upfrontInvestmentCost = fvSystemSizeKw * fvSystemInstallationCostPerKw;
+    try {
+      // final storageCapacity = widget.userData != null 
+      //   ? double.tryParse(widget.userData!['storageCapacity']) ?? 0.0
+      //   : 0.0;
+      // final storageYears = widget.userData != null 
+      //   ? double.tryParse(widget.userData!['storageYears']) ?? 0.0
+      //   : 0.0; 
+      //TODO Jakbyśmy chcieli pobierać rzeczywiste dane użytkownika, to byśmy musieli dodać odpowiednie pola do widgetu
+      final storageCapacity = 10.0; // Przykładowa wartość
+      final response = await http.post(
+        Uri.parse(_apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'parameters': {
+            'fv_system_size_kw': fvSystemSizeKw,
+            'energy_storage_size_kwh':storageCapacity, // storageCapacity,
+            'first_year_energy_buying_price': firstYearEnergyBuyingPrice,
+            'first_year_energy_selling_price': firstYearEnergySellingPrice,
+            'fv_system_installation_cost_per_kw': fvSystemInstallationCostPerKw,
+            'yearly_energy_price_increase_percentage': yearlyEnergyPriceIncreasePercentage,
+            'fv_degradation_percentage_per_year': 0.5,
+            'energy_storage_degradation_percentage_per_year': 0.5,
+            'years': calculationYears,
+            'default_consumption': singleYearEnergyConsumption / (24 * 365),
+          }
+        }),
+      ).timeout(const Duration(seconds: 30));
 
-    var buyingPrice = firstYearEnergyBuyingPrice;
-    var sellingPrice = firstYearEnergySellingPrice;
-    for (int i = 0; i < calculationYears; i++) {
-      double withoutPv = singleYearEnergyConsumption * firstYearEnergyBuyingPrice;
-      double withPv = withoutPv - (fvSystemSizeKw * 0.141 * 365 * 24);
-
-      double withoutPrice = withoutPv * buyingPrice;
-      double pvPrice = withPv * sellingPrice;
-      yearlyResults.add({
-        'without_pv': withoutPrice,
-        'with_pv': pvPrice,
-        'with_pv_full': pvPrice + upfrontInvestmentCost,
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        // Safely parse the response data
+        setState(() {
+          upfrontInvestmentCost = _parseDouble(data['upfront_investment_cost']);
+          yearlyResults = (data['results_per_year'] as List)
+              .map<Map<String, double>>((yearData) {
+            return {
+              'year': _parseDouble(yearData['year']),
+              'without_pv': _parseDouble(yearData['non_fv_price']),
+              'with_pv': _parseDouble(yearData['fv_price']),
+              'with_pv_full': _parseDouble(yearData['fv_price']) + upfrontInvestmentCost,
+              'savings': _parseDouble(yearData['savings']),
+              'es_charge_kwh': _parseDouble(yearData['es_charge_kwh'] ?? 0),
+              'consumption_kwh': _parseDouble(yearData['consumption_kwh']),
+              'production_kwh': _parseDouble(yearData['production_kwh']),
+            };
+          }).toList();
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Connection error: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
       });
-
-      buyingPrice *= (1 + yearlyEnergyPriceIncreasePercentage / 100);
-      sellingPrice *= (1 + yearlyEnergyPriceIncreasePercentage / 100);
     }
-
-    // Mock loading
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      isLoading = false;
-    });
-
-    return;
-
-    // try {
-    //   final response = await http.post(
-    //     Uri.parse(_apiUrl),
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: jsonEncode({
-    //       'single_year_energy_consumption': _singleYearEnergyConsumption,
-    //       'first_year_energy_buying_price': _firstYearEnergyBuyingPrice,
-    //       'first_year_energy_selling_price': _firstYearEnergySellingPrice,
-    //       'fv_system_installation_cost_per_kw': _fvSystemInstallationCostPerKw,
-    //       'fv_system_size_kw': _fvSystemSizeKw,
-    //       'fv_system_output_percentage': _fvSystemOutputPercentage,
-    //       'autoconsumption_percentage': _autoconsumptionPercentage,
-    //       'yearly_energy_price_increase_percentage': _yearlyEnergyPriceIncreasePercentage,
-    //       'years': _calculationYears,
-    //     }),
-    //   );
-
-    //   if (response.statusCode == 200) {
-    //     final data = jsonDecode(response.body);
-    //     setState(() {
-    //       _upfrontInvestmentCost = data['upfront_investment_cost'];
-    //       _yearlyResults = List<Map<String, double>>.from(
-    //         data['energy_prices_per_year'].map(
-    //           (year) => {
-    //             'without_pv': year['energy_price_without_fotovoltaic'],
-    //             'with_pv': year['energy_price_with_fotovoltaic'],
-    //           },
-    //         ),
-    //       );
-    //     });
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Błąd obliczeń: ${response.statusCode}')));
-    //   }
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Błąd połączenia: $e')));
-    // } finally {
-    //   setState(() => _isLoading = false);
-    // }
   }
+
+  double _parseDouble(dynamic value) {
+  if (value is int) {
+    return value.toDouble();
+  } else if (value is double) {
+    return value;
+  } else if (value is String) {
+    return double.tryParse(value) ?? 0.0;
+  }
+  return 0.0;
+}
 
   @override
   Widget build(BuildContext context) {

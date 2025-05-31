@@ -1,3 +1,5 @@
+import os
+
 class AdvancedCalcData:
     def __init__(self,
                 fv_system_size_kw: float,
@@ -175,12 +177,14 @@ def load_date_data_from_csv(path):
     return ret
 
 def load_data_from_files():
-    consumption_file = "consumption.csv"
-    fv_production_file = "fv_production.csv"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    consumption_file = os.path.join(script_dir, "consumption.csv")
+    fv_production_file = os.path.join(script_dir, "fv_production.csv")
 
     global consumption_data, fv_production_data
     consumption_data = load_date_data_from_csv(consumption_file)
     fv_production_data = load_date_data_from_csv(fv_production_file)
+    return consumption_data, fv_production_data
 
 
 def get_test_data() -> AdvancedCalcData:
