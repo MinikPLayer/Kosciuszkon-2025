@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 
 class CalculatorPage extends StatefulWidget {
-  const CalculatorPage({Key? key}) : super(key: key);
+  const CalculatorPage({super.key});
 
   @override
   State<CalculatorPage> createState() => _CalculatorPageState();
@@ -13,7 +13,7 @@ class CalculatorPage extends StatefulWidget {
 
 class _CalculatorPageState extends State<CalculatorPage> {
   final _formKey = GlobalKey<FormState>();
-  final _apiUrl = 'http://your-backend-url.com/calculate'; // Zastąp prawdziwym URL
+  final _apiUrl = 'http://127.0.0.1:8000/api/calculate/'; 
 
   // Dane wejściowe
   double singleYearEnergyConsumption = 1713.0;
