@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'login_page.dart'; 
+import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -8,7 +8,7 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.userData});
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
@@ -57,19 +57,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _saveChanges() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Zmiany zostały zapisane')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Zmiany zostały zapisane')));
       _toggleEdit();
       // Tutaj można dodać logikę zapisu do backendu
     }
   }
 
   void _logout() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   Widget _buildInfoCard(String title, String value) {
@@ -80,21 +75,9 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-            ),
+            Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
             const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -106,9 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
       controller: controller,
       decoration: InputDecoration(labelText: label),
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      inputFormatters: isNumber 
-          ? [FilteringTextInputFormatter.digitsOnly] 
-          : null,
+      inputFormatters: isNumber ? [FilteringTextInputFormatter.digitsOnly] : null,
       validator: (value) => value?.isEmpty ?? true ? 'To pole jest wymagane' : null,
       enabled: _isEditing,
     );
@@ -118,10 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return DropdownButtonFormField<String>(
       value: value,
       decoration: InputDecoration(labelText: label),
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item),
-      )).toList(),
+      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
       onChanged: _isEditing ? onChanged : null,
     );
   }
@@ -155,15 +133,8 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('Mój Profil'),
         backgroundColor: Colors.green,
         actions: [
-          IconButton(
-            icon: Icon(_isEditing ? Icons.close : Icons.edit),
-            onPressed: _toggleEdit,
-          ),
-          if (_isEditing)
-            IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _saveChanges,
-            ),
+          IconButton(icon: Icon(_isEditing ? Icons.close : Icons.edit), onPressed: _toggleEdit),
+          if (_isEditing) IconButton(icon: const Icon(Icons.save), onPressed: _saveChanges),
         ],
       ),
       body: SingleChildScrollView(
@@ -175,20 +146,10 @@ class _ProfilePageState extends State<ProfilePage> {
               CircleAvatar(
                 radius: 50,
                 backgroundColor: Colors.green[100],
-                child: const Icon(
-                  Icons.person,
-                  size: 50,
-                  color: Colors.green,
-                ),
+                child: const Icon(Icons.person, size: 50, color: Colors.green),
               ),
               const SizedBox(height: 16),
-              Text(
-                widget.userData['email'],
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(widget.userData['email'], style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 24),
 
               // Sekcja danych użytkownika
@@ -196,17 +157,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Dane użytkownika',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
                 ),
               ),
               const Divider(height: 16),
               _buildEditableField('Email', _emailController),
               _buildDropdown('Typ użytkownika', _userType, [
-                'Osoba prywatna', 'Firma', 'Rolnik'
+                'Osoba prywatna',
+                'Firma',
+                'Rolnik',
               ], (value) => setState(() => _userType = value!)),
               const SizedBox(height: 16),
 
@@ -215,32 +174,50 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Dane nieruchomości',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
                 ),
               ),
               const Divider(height: 16),
               _buildDropdown('Województwo', _voivodeship, [
-                 'Dolnośląskie', 'Kujawsko-Pomorskie', 'Lubelskie', 'Lubuskie', 'Łódzkie',
-    'Małopolskie', 'Mazowieckie', 'Opolskie', 'Podkarpackie', 'Podlaskie',
-    'Pomorskie', 'Śląskie', 'Świętokrzyskie', 'Warmińsko-Mazurskie', 
-    'Wielkopolskie', 'Zachodniopomorskie'
+                'Dolnośląskie',
+                'Kujawsko-Pomorskie',
+                'Lubelskie',
+                'Lubuskie',
+                'Łódzkie',
+                'Małopolskie',
+                'Mazowieckie',
+                'Opolskie',
+                'Podkarpackie',
+                'Podlaskie',
+                'Pomorskie',
+                'Śląskie',
+                'Świętokrzyskie',
+                'Warmińsko-Mazurskie',
+                'Wielkopolskie',
+                'Zachodniopomorskie',
               ], (value) => setState(() => _voivodeship = value!)),
               _buildDropdown('Typ budynku', _buildingType, [
-                    'Dom jednorodzinny', 'Budynek gospodarczy', 
-    'Hala przemysłowa', 'Gruntowa instalacja'
+                'Dom jednorodzinny',
+                'Budynek gospodarczy',
+                'Hala przemysłowa',
+                'Gruntowa instalacja',
               ], (value) => setState(() => _buildingType = value!)),
               _buildDropdown('Orientacja', _orientation, [
-                    'Południe', 'Wschód', 'Zachód', 'Północ', 
-    'Północny zachód', 'Południowy zachód', 
-    'Południowy wschód', 'Północny wschód'
+                'Południe',
+                'Wschód',
+                'Zachód',
+                'Północ',
+                'Północny zachód',
+                'Południowy zachód',
+                'Południowy wschód',
+                'Północny wschód',
               ], (value) => setState(() => _orientation = value!)),
               _buildDropdown('Pokrycie dachu', _roofType, [
-                    'Dachówka ceramiczna', 'Blachodachówka', 
-    'Papa', 'Blacha trapezowa', 'Inne'
+                'Dachówka ceramiczna',
+                'Blachodachówka',
+                'Papa',
+                'Blacha trapezowa',
+                'Inne',
               ], (value) => setState(() => _roofType = value!)),
               _buildRoofAngleSlider(),
               const SizedBox(height: 16),
@@ -250,24 +227,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Obecna instalacja',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
                 ),
               ),
               const Divider(height: 16),
-              _buildEditableField(
-                'Pojemność magazynów (kWh)', 
-                _storageCapacityController,
-                isNumber: true,
-              ),
-              _buildEditableField(
-                'Lata użytkowania', 
-                _storageYearsController,
-                isNumber: true,
-              ),
+              _buildEditableField('Pojemność magazynów (kWh)', _storageCapacityController, isNumber: true),
+              _buildEditableField('Lata użytkowania', _storageYearsController, isNumber: true),
               const SizedBox(height: 24),
 
               // Przyciski akcji
@@ -281,7 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: const Text('Wyloguj się'),
                 ),
               const SizedBox(height: 16),
-              
+
               // Link do wyników kalkulacji
               TextButton(
                 onPressed: () {
@@ -289,11 +254,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   //   builder: (context) => CalculationResultsPage(),
                   // ));
                 },
-                child: const Text(
-                  'Zobacz historię kalkulacji',
-                  style: TextStyle(color: Colors.green),
+                child: const Text('Zobacz historię kalkulacji', style: TextStyle(color: Colors.green)),
               ),
-              )
             ],
           ),
         ),
