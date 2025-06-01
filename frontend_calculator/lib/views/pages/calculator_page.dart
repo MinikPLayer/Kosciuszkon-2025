@@ -13,7 +13,7 @@ class CalculatorPage extends StatefulWidget {
 
 class _CalculatorPageState extends State<CalculatorPage> {
   final _formKey = GlobalKey<FormState>();
-  final _apiUrl = 'http://127.0.0.1:8000/api/calculate/'; 
+  final _apiUrl = 'http://127.0.0.1:8000/api/calculate/';
 
   // Dane wejściowe
   double singleYearEnergyConsumption = 1713.0;
@@ -29,7 +29,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   List<Map<String, double>> yearlyResults = [];
   bool isLoading = false;
 
-Future<void> _calculate() async {
+  Future<void> _calculate() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -38,62 +38,60 @@ Future<void> _calculate() async {
     });
 
     try {
-      // final storageCapacity = widget.userData != null 
+      // final storageCapacity = widget.userData != null
       //   ? double.tryParse(widget.userData!['storageCapacity']) ?? 0.0
       //   : 0.0;
-      // final storageYears = widget.userData != null 
+      // final storageYears = widget.userData != null
       //   ? double.tryParse(widget.userData!['storageYears']) ?? 0.0
-      //   : 0.0; 
+      //   : 0.0;
       //TODO Jakbyśmy chcieli pobierać rzeczywiste dane użytkownika, to byśmy musieli dodać odpowiednie pola do widgetu
       final storageCapacity = 10.0; // Przykładowa wartość
-      final response = await http.post(
-        Uri.parse(_apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'parameters': {
-            'fv_system_size_kw': fvSystemSizeKw,
-            'energy_storage_size_kwh':storageCapacity, // storageCapacity,
-            'first_year_energy_buying_price': firstYearEnergyBuyingPrice,
-            'first_year_energy_selling_price': firstYearEnergySellingPrice,
-            'fv_system_installation_cost_per_kw': fvSystemInstallationCostPerKw,
-            'yearly_energy_price_increase_percentage': yearlyEnergyPriceIncreasePercentage,
-            'fv_degradation_percentage_per_year': 0.5,
-            'energy_storage_degradation_percentage_per_year': 0.5,
-            'years': calculationYears,
-            'default_consumption': singleYearEnergyConsumption / (24 * 365),
-          }
-        }),
-      ).timeout(const Duration(seconds: 30));
+      final response = await http
+          .post(
+            Uri.parse(_apiUrl),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'parameters': {
+                'fv_system_size_kw': fvSystemSizeKw,
+                'energy_storage_size_kwh': storageCapacity, // storageCapacity,
+                'first_year_energy_buying_price': firstYearEnergyBuyingPrice,
+                'first_year_energy_selling_price': firstYearEnergySellingPrice,
+                'fv_system_installation_cost_per_kw': fvSystemInstallationCostPerKw,
+                'yearly_energy_price_increase_percentage': yearlyEnergyPriceIncreasePercentage,
+                'fv_degradation_percentage_per_year': 0.5,
+                'energy_storage_degradation_percentage_per_year': 0.5,
+                'years': calculationYears,
+                'default_consumption': singleYearEnergyConsumption / (24 * 365),
+              },
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
+
         // Safely parse the response data
         setState(() {
           upfrontInvestmentCost = _parseDouble(data['upfront_investment_cost']);
-          yearlyResults = (data['results_per_year'] as List)
-              .map<Map<String, double>>((yearData) {
-            return {
-              'year': _parseDouble(yearData['year']),
-              'without_pv': _parseDouble(yearData['non_fv_price']),
-              'with_pv': _parseDouble(yearData['fv_price']),
-              'with_pv_full': _parseDouble(yearData['fv_price']) + upfrontInvestmentCost,
-              'savings': _parseDouble(yearData['savings']),
-              'es_charge_kwh': _parseDouble(yearData['es_charge_kwh'] ?? 0),
-              'consumption_kwh': _parseDouble(yearData['consumption_kwh']),
-              'production_kwh': _parseDouble(yearData['production_kwh']),
-            };
-          }).toList();
+          yearlyResults =
+              (data['results_per_year'] as List).map<Map<String, double>>((yearData) {
+                return {
+                  'year': _parseDouble(yearData['year']),
+                  'without_pv': _parseDouble(yearData['non_fv_price']),
+                  'with_pv': _parseDouble(yearData['fv_price']),
+                  'with_pv_full': _parseDouble(yearData['fv_price']) + upfrontInvestmentCost,
+                  'savings': _parseDouble(yearData['savings']),
+                  'es_charge_kwh': _parseDouble(yearData['es_charge_kwh'] ?? 0),
+                  'consumption_kwh': _parseDouble(yearData['consumption_kwh']),
+                  'production_kwh': _parseDouble(yearData['production_kwh']),
+                };
+              }).toList();
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.body}')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Connection error: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Connection error: $e')));
     } finally {
       setState(() {
         isLoading = false;
@@ -102,15 +100,15 @@ Future<void> _calculate() async {
   }
 
   double _parseDouble(dynamic value) {
-  if (value is int) {
-    return value.toDouble();
-  } else if (value is double) {
-    return value;
-  } else if (value is String) {
-    return double.tryParse(value) ?? 0.0;
+    if (value is int) {
+      return value.toDouble();
+    } else if (value is double) {
+      return value;
+    } else if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    }
+    return 0.0;
   }
-  return 0.0;
-}
 
   @override
   Widget build(BuildContext context) {
@@ -289,22 +287,22 @@ Future<void> _calculate() async {
                                         children: [
                                           TextSpan(
                                             text:
-                                                'Zysk: \n${(entries[group.x]['without_pv']! - entries[group.x]['with_pv_full']!).toStringAsFixed(2)} zł\n',
+                                                'Zysk: \n${(entries[groupIndex]['without_pv']! - entries[groupIndex]['with_pv_full']!).toStringAsFixed(2)} zł\n',
                                             style: const TextStyle(color: Colors.green, fontSize: 12),
                                           ),
                                           TextSpan(
                                             text:
-                                                'Bez paneli: \n${entries[group.x]['without_pv']!.toStringAsFixed(2)} zł\n',
+                                                'Bez paneli: \n${entries[groupIndex]['without_pv']!.toStringAsFixed(2)} zł\n',
                                             style: const TextStyle(color: Colors.red, fontSize: 12),
                                           ),
                                           TextSpan(
                                             text:
-                                                'Z panelami: \n${entries[group.x]['with_pv']!.toStringAsFixed(2)} zł\n',
+                                                'Z panelami: \n${entries[groupIndex]['with_pv']!.toStringAsFixed(2)} zł\n',
                                             style: const TextStyle(color: Colors.blue, fontSize: 12),
                                           ),
                                           TextSpan(
                                             text:
-                                                'Całkowity koszt z panelami: \n${entries[group.x]['with_pv_full']!.toStringAsFixed(2)} zł',
+                                                'Całkowity koszt z panelami: \n${entries[groupIndex]['with_pv_full']!.toStringAsFixed(2)} zł',
                                             style: const TextStyle(color: Colors.lightBlue, fontSize: 12),
                                           ),
                                         ],
