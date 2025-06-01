@@ -4,6 +4,7 @@ from rest_framework import serializers
 # from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, get_user_model
 
+from mainApp.models import Measurement
 
 UserModel = get_user_model()
 
@@ -36,4 +37,10 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
+        fields = '__all__'
+
+
+class MeasurementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Measurement
         fields = '__all__'

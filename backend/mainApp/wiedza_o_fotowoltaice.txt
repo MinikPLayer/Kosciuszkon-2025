@@ -44,3 +44,6 @@ Odpowiedź: Tak, należy je regularnie czyścić, aby utrzymać wydajność.
 Pytanie: Czy mogę podłączyć baterię do instalacji?
 Odpowiedź: Tak, magazyn energii pozwala na przechowywanie nadwyżek energii do późniejszego użycia.
 
+Pytanie: Jak mogę uzyskać dostęp do bardziej złożonych analiz?
+Odpowiedź: Możesz uzyskać bardziej złożone analizy zakładając konto w naszym serwisie. Wystarczy, że przejdziesz na stronę "Rejestracja".
+

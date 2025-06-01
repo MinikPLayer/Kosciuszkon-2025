@@ -20,7 +20,7 @@ class WidgetTree extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Pierogi PV',
+            'Evergy',
             style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.lightGreenAccent),
           ),
           centerTitle: true,
@@ -37,7 +37,7 @@ class WidgetTree extends StatelessWidget {
           elevation: 6,
           actions: [
             IconButton(
-              icon: Icon(Icons.person, color: Colors.greenAccent, size: 28),
+              icon: Icon(Icons.person, color: Colors.black, size: 28),
               onPressed: () async {
                 final userData = {
                   'email': 'example@email.com',

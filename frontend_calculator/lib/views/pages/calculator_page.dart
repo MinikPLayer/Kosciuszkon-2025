@@ -369,7 +369,7 @@ Future<void> _calculate() async {
                                 ),
                               ],
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ],

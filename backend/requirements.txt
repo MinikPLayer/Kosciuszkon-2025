@@ -4,3 +4,17 @@ djangorestframework-simplejwt
 ollama
 pillow
 mysqlclient
+paho-mqtt
+asgiref==3.8.1
+certifi==2025.1.31
+charset-normalizer==3.4.1
+idna==3.10
+oauthlib==3.2.2
+pillow==11.1.0
+PyJWT==2.9.0
+requests==2.32.3
+requests-oauthlib==2.0.0
+six==1.17.0
+sqlparse==0.5.3
+tzdata==2025.1
+urllib3==2.3.0

@@ -56,3 +56,15 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+class Measurement(models.Model):
+    id = models.AutoField(primary_key=True)
+    sensor = models.CharField(max_length=200)
+    value = models.DecimalField(default=0.00, decimal_places=10, max_digits=20)
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "Pomiar " + str(self.id)
+
+

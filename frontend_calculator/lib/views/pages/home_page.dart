@@ -3,6 +3,7 @@ import 'package:frontend_calculator/views/pages/offer_search_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
+import 'package:frontend_calculator/views/pages/measurements_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -38,7 +39,7 @@ class HomePage extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       children: [
         Text(
-          'Witaj w ECOPierogi!',
+          'Witaj w Evergy!',
           style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
         ),
         const SizedBox(height: 8),
@@ -80,6 +81,18 @@ class HomePage extends StatelessWidget {
               title: 'Słownik',
               color: Colors.purple.shade100,
               page: const DictionaryPage(),
+            ),
+            _buildActionCard(
+              context,
+              icon: Icons.area_chart,
+              title: 'Wykresy',
+              color: Colors.red.shade300,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => MeasurementsPage()),
+                );
+              },
             ),
             _buildActionCard(
               context,
