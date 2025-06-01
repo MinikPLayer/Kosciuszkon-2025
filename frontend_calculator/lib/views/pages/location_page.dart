@@ -5,9 +5,7 @@ class LocationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LocationSelectionPage(),
-    );
+    return Scaffold(body: LocationSelectionPage());
   }
 }
 
@@ -137,11 +135,10 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
 
   void _selectLocation(String locationId) {
     setState(() {
-      locations = locations.map((location) {
-        return location.copyWith(
-          isSelected: location.id == locationId,
-        );
-      }).toList();
+      locations =
+          locations.map((location) {
+            return location.copyWith(isSelected: location.id == locationId);
+          }).toList();
     });
 
     Future.delayed(Duration(milliseconds: 300), () {
@@ -159,16 +156,8 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Twoje lokacje'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {},
-          ),
-        ],
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+        actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(16),
@@ -186,9 +175,7 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
       margin: EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: location.isSelected
-            ? BorderSide(color: Colors.blue, width: 2)
-            : BorderSide.none,
+        side: location.isSelected ? BorderSide(color: Colors.blue, width: 2) : BorderSide.none,
       ),
       elevation: 4,
       child: InkWell(
@@ -201,28 +188,13 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
             children: [
               Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      location.name,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  Expanded(child: Text(location.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
                   if (location.isSelected)
-                    Chip(
-                      label: Text('Wybrane',
-                          style: TextStyle(color: Colors.white)),
-                      backgroundColor: Colors.blue,
-                    ),
+                    Chip(label: Text('Wybrane', style: TextStyle(color: Colors.white)), backgroundColor: Colors.blue),
                 ],
               ),
               SizedBox(height: 8),
-              Text(
-                location.address,
-                style: TextStyle(color: Colors.grey[600]),
-              ),
+              Text(location.address, style: TextStyle(color: Colors.grey[600])),
               SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,24 +203,13 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => DevicesListPage(location: location),
-                        ),
+                        MaterialPageRoute(builder: (context) => DevicesListPage(location: location)),
                       );
                     },
-                    child: _buildInfoChip(
-                      icon: Icons.devices,
-                      label: '${location.devices.length} urządzeń',
-                    ),
+                    child: _buildInfoChip(icon: Icons.devices, label: '${location.devices.length} urządzeń'),
                   ),
-                  _buildInfoChip(
-                    icon: Icons.thermostat,
-                    label: location.temperature,
-                  ),
-                  _buildInfoChip(
-                    icon: Icons.water_damage,
-                    label: location.humidity,
-                  ),
+                  _buildInfoChip(icon: Icons.thermostat, label: location.temperature),
+                  _buildInfoChip(icon: Icons.water_damage, label: location.humidity),
                 ],
               ),
             ],
@@ -261,8 +222,8 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
   Widget _buildInfoChip({required IconData icon, required String label}) {
     return Chip(
       avatar: Icon(icon, size: 18),
-      label: Text(label),
-      backgroundColor: Colors.grey[200],
+      label: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer)),
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
     );
   }
 }
@@ -277,35 +238,20 @@ class LocationDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(location.name),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Szczegóły lokacji',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+            Text('Szczegóły lokacji', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-            ListTile(
-              leading: Icon(Icons.location_on),
-              title: Text('Adres'),
-              subtitle: Text(location.address),
-            ),
+            ListTile(leading: Icon(Icons.location_on), title: Text('Adres'), subtitle: Text(location.address)),
             Divider(),
             InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DevicesListPage(location: location),
-                  ),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => DevicesListPage(location: location)));
               },
               child: ListTile(
                 leading: Icon(Icons.devices),
@@ -315,17 +261,9 @@ class LocationDetailPage extends StatelessWidget {
               ),
             ),
             Divider(),
-            ListTile(
-              leading: Icon(Icons.thermostat),
-              title: Text('Temperatura'),
-              subtitle: Text(location.temperature),
-            ),
+            ListTile(leading: Icon(Icons.thermostat), title: Text('Temperatura'), subtitle: Text(location.temperature)),
             Divider(),
-            ListTile(
-              leading: Icon(Icons.water_damage),
-              title: Text('Wilgotność'),
-              subtitle: Text(location.humidity),
-            ),
+            ListTile(leading: Icon(Icons.water_damage), title: Text('Wilgotność'), subtitle: Text(location.humidity)),
             SizedBox(height: 32),
             Center(
               child: ElevatedButton(
@@ -333,9 +271,7 @@ class LocationDetailPage extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: Text('Powrót do listy lokacji'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                ),
+                style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
               ),
             ),
           ],
@@ -355,10 +291,7 @@ class DevicesListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Urządzenia - ${location.name}'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(16),
@@ -369,46 +302,27 @@ class DevicesListPage extends StatelessWidget {
             margin: EdgeInsets.only(bottom: 12),
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DeviceDetailPage(device: device),
-                  ),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => DeviceDetailPage(device: device)));
               },
               child: Padding(
                 padding: EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      device.name,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text(device.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
                     Row(
                       children: [
-                        Chip(
-                          label: Text(device.type),
-                          backgroundColor: Colors.blue[50],
-                        ),
+                        Chip(label: Text(device.type), backgroundColor: Colors.blue[50]),
                         SizedBox(width: 8),
                         Chip(
                           label: Text(device.status),
-                          backgroundColor: device.status == 'Aktywny'
-                              ? Colors.green[50]
-                              : Colors.red[50],
+                          backgroundColor: device.status == 'Aktywny' ? Colors.green[50] : Colors.red[50],
                         ),
                       ],
                     ),
                     SizedBox(height: 8),
-                    Text(
-                      'Ostatnia aktywność: ${device.lastActivity}',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
+                    Text('Ostatnia aktywność: ${device.lastActivity}', style: TextStyle(color: Colors.grey[600])),
                   ],
                 ),
               ),
@@ -430,40 +344,20 @@ class DeviceDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Icon(
-                _getDeviceIcon(device.type),
-                size: 80,
-                color: Colors.blue,
-              ),
-            ),
+            Center(child: Icon(_getDeviceIcon(device.type), size: 80, color: Colors.blue)),
             SizedBox(height: 24),
-            Text(
-              'Szczegóły urządzenia',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+            Text('Szczegóły urządzenia', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-            ListTile(
-              leading: Icon(Icons.device_hub),
-              title: Text('Typ urządzenia'),
-              subtitle: Text(device.type),
-            ),
+            ListTile(leading: Icon(Icons.device_hub), title: Text('Typ urządzenia'), subtitle: Text(device.type)),
             Divider(),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('Status'),
-              subtitle: Text(device.status),
-            ),
+            ListTile(leading: Icon(Icons.info), title: Text('Status'), subtitle: Text(device.status)),
             Divider(),
             ListTile(
               leading: Icon(Icons.update),
@@ -471,11 +365,7 @@ class DeviceDetailPage extends StatelessWidget {
               subtitle: Text(device.lastActivity),
             ),
             Divider(),
-            ListTile(
-              leading: Icon(Icons.bolt),
-              title: Text('Pobór mocy'),
-              subtitle: Text(device.powerConsumption),
-            ),
+            ListTile(leading: Icon(Icons.bolt), title: Text('Pobór mocy'), subtitle: Text(device.powerConsumption)),
             SizedBox(height: 32),
             Center(
               child: ElevatedButton(
@@ -483,9 +373,7 @@ class DeviceDetailPage extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: Text('Powrót do listy urządzeń'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                ),
+                style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16)),
               ),
             ),
           ],
