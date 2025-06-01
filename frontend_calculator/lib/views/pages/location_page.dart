@@ -102,7 +102,7 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
           id: 'd2',
           name: 'Kamera wejściowa',
           type: 'Kamera',
-          status: 'Aktywna',
+          status: 'Offline',
           locationId: '1',
           lastActivity: '1 minutę temu',
           powerConsumption: '12W',
@@ -313,11 +313,14 @@ class DevicesListPage extends StatelessWidget {
                     SizedBox(height: 8),
                     Row(
                       children: [
-                        Chip(label: Text(device.type), backgroundColor: Colors.blue[50]),
+                        Chip(
+                          label: Text(device.type, style: TextStyle(color: Theme.of(context).colorScheme.onTertiary)),
+                          backgroundColor: Theme.of(context).colorScheme.tertiary,
+                        ),
                         SizedBox(width: 8),
                         Chip(
-                          label: Text(device.status),
-                          backgroundColor: device.status == 'Aktywny' ? Colors.green[50] : Colors.red[50],
+                          label: Text(device.status, style: TextStyle(color: Colors.white)),
+                          backgroundColor: device.status.startsWith('Aktywn') ? Colors.green : Colors.red,
                         ),
                       ],
                     ),
