@@ -20,11 +20,16 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include,  re_path
+from mainApp import consumers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('mainApp.urls')),
+]
+
+websocket_urlpatterns = [
+    re_path(r'ws/temperature/$', consumers.TemperatureConsumer.as_asgi()),
 ]
 
 if settings.DEBUG:

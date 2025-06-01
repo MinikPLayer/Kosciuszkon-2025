@@ -106,7 +106,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
             },
           ),
         ),
@@ -122,7 +122,7 @@ class HomeScreen extends StatelessWidget {
             ),
             child: Text('Załóż konto', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegistrationPage()));
             },
           ),
         ),

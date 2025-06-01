@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/iot_analysis_page.dart';
 import 'package:frontend_calculator/views/pages/offer_search_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
@@ -81,6 +82,13 @@ class HomePage extends StatelessWidget {
               color: Colors.purple.shade100,
               page: const DictionaryPage(),
             ),
+             _buildActionCard(
+            context,
+            icon: Icons.sensors,
+            title: 'Monitor IoT',
+            color: Colors.teal,
+            page: const IoTAnalysisPage(),
+          ),
             _buildActionCard(
               context,
               icon: Icons.history,
