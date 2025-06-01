@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/location_page.dart';
 import 'package:frontend_calculator/views/pages/offer_search_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
@@ -81,6 +82,13 @@ class HomePage extends StatelessWidget {
               title: 'Słownik',
               color: Colors.purple.shade100,
               page: DictionaryPage(),
+            ),
+            _buildActionCard(
+              context,
+              icon: Icons.home,
+              title: 'SmartHome',
+              color: Colors.purple.shade100,
+              page: LocationPage(),
             ),
             _buildActionCard(
               context,
