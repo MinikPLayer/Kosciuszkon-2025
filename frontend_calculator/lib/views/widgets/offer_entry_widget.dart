@@ -5,8 +5,9 @@ import 'package:frontend_calculator/views/widgets/fv_economy_chart_widget.dart';
 class OfferEntryWidget extends StatefulWidget {
   final OfferModel offer;
   final bool isPremium;
+  final int yearsToCalculate;
 
-  const OfferEntryWidget({super.key, required this.offer, this.isPremium = false});
+  const OfferEntryWidget({super.key, required this.offer, required this.yearsToCalculate, this.isPremium = false});
 
   @override
   State<OfferEntryWidget> createState() => _OfferEntryWidgetState();
@@ -19,10 +20,10 @@ class _OfferEntryWidgetState extends State<OfferEntryWidget> {
   @override
   void initState() {
     super.initState();
-    inputData.fvSystemSizeKw = 1.0;
     inputData.fvSystemInstallationCostPerKw = widget.offer.pricePerKw;
     inputData.fvSystemSizeKw = widget.offer.fullSystemOutputKw;
     inputData.singleYearEnergyConsumption = widget.offer.userYearlyConsumptionKw;
+    inputData.calculationYears = widget.yearsToCalculate;
 
     FvEconomyChartWidget.calculate(context, inputData).then((data) {
       if (data != null) {
