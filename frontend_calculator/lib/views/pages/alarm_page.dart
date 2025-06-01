@@ -233,10 +233,23 @@ class AlarmPage extends StatelessWidget {
   }
 
   Widget _buildAlarmDetails(BuildContext context, AlarmEvent alarm, Color textColor) {
+    var color = Theme.of(context).colorScheme.surfaceContainerHigh;
+    switch (alarm.severity) {
+      case AlarmSeverity.critical:
+        color = Theme.of(context).colorScheme.errorContainer.withOpacity(0.5);
+        textColor = Theme.of(context).colorScheme.onErrorContainer;
+        break;
+      case AlarmSeverity.high:
+        color = Theme.of(context).colorScheme.errorContainer.withOpacity(0.1);
+        break;
+      default:
+        color = Theme.of(context).colorScheme.surfaceContainerHigh;
+    }
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: color,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: textColor.withOpacity(0.3)),
       ),
