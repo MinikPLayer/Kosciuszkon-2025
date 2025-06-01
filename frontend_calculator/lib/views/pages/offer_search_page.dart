@@ -99,6 +99,8 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
 
       var limit = min(areaLimit, priceLimit);
       offer.fitScore = limit;
+      offer.fullSystemOutputKw = limit;
+      offer.userYearlyConsumptionKw = yearlyConsumption;
     }
 
     var maxFitScore = newResults.map((e) => e.fitScore).reduce((a, b) => max(a, b));
@@ -170,6 +172,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
                     isLoading
                         ? Center(child: CircularProgressIndicator())
                         : ListView.builder(
+                          addAutomaticKeepAlives: true,
                           itemCount: results.length,
                           itemBuilder: (context, index) {
                             final offer = results[index];

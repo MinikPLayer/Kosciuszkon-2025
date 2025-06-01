@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_calculator/data/notifiers.dart';
+import 'package:frontend_calculator/main.dart';
 import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -77,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _logout() {
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomeScreen()), (r) => false);
   }
 
   Widget _buildInfoCard(String title, String value) {

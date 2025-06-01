@@ -102,10 +102,14 @@ class FvEconomyChartWidget extends StatelessWidget {
 
         return FvEconomyChartData(upfrontInvestmentCost: upfrontInvestmentCost, yearlyResults: yearlyResults);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Connection error: $e')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Connection error: $e')));
+      }
     }
 
     return null;

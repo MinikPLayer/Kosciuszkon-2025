@@ -9,6 +9,9 @@ class OfferModel {
   double temperatureLossCoefficient;
   String imageUrl;
 
+  double fullSystemOutputKw = 0.0;
+  double userYearlyConsumptionKw = 0.0;
+
   OfferModel({
     required this.id,
     required this.title,
@@ -19,5 +22,6 @@ class OfferModel {
     required this.temperatureLossCoefficient,
     required this.imageUrl,
     required this.description,
+    this.fullSystemOutputKw = 0.0,
   });
 }

@@ -2,10 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:frontend_calculator/data/models/offer_model.dart';
 import 'package:frontend_calculator/views/widgets/fv_economy_chart_widget.dart';
 
-class OfferEntryWidget extends StatelessWidget {
+class OfferEntryWidget extends StatefulWidget {
   final OfferModel offer;
   final bool isPremium;
+
   const OfferEntryWidget({super.key, required this.offer, this.isPremium = false});
+
+  @override
+  State<OfferEntryWidget> createState() => _OfferEntryWidgetState();
+}
+
+class _OfferEntryWidgetState extends State<OfferEntryWidget> {
+  FvEconomyChartInputData inputData = FvEconomyChartInputData();
+  FvEconomyChartData? outputData;
+
+  @override
+  void initState() {
+    super.initState();
+    inputData.fvSystemSizeKw = 1.0;
+    inputData.fvSystemInstallationCostPerKw = widget.offer.pricePerKw;
+    inputData.fvSystemSizeKw = widget.offer.fullSystemOutputKw;
+    inputData.singleYearEnergyConsumption = widget.offer.userYearlyConsumptionKw;
+
+    FvEconomyChartWidget.calculate(context, inputData).then((data) {
+      if (data != null) {
+        if (mounted) {
+          setState(() {
+            outputData = data;
+          });
+        }
+      }
+    });
+  }
 
   Color getFitScoreColor(double fitScore) {
     if (fitScore >= 9.0) {
@@ -22,7 +50,7 @@ class OfferEntryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var side =
-        isPremium
+        widget.isPremium
             ? BorderSide(color: Colors.amber, width: 1.0)
             : BorderSide(color: Colors.green.withValues(alpha: 0.5), width: 1.0);
 
@@ -33,7 +61,7 @@ class OfferEntryWidget extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12.0),
-            child: Image.asset('assets/images/${offer.imageUrl}', width: 85, height: 85, fit: BoxFit.cover),
+            child: Image.asset('assets/images/${widget.offer.imageUrl}', width: 85, height: 85, fit: BoxFit.cover),
           ),
           Expanded(
             child: Padding(
@@ -42,23 +70,23 @@ class OfferEntryWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(offer.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(widget.offer.title, style: const TextStyle(fontWeight: FontWeight.bold)),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        '★ ${offer.fitScore.toStringAsFixed(1)}',
-                        style: TextStyle(color: getFitScoreColor(offer.fitScore)),
+                        '★ ${widget.offer.fitScore.toStringAsFixed(1)}',
+                        style: TextStyle(color: getFitScoreColor(widget.offer.fitScore)),
                       ),
                       const Text(' - '),
-                      Text(offer.companyName),
+                      Text(widget.offer.companyName),
                     ],
                   ),
                   Row(
                     children: [
                       Text(
-                        offer.pricePerKw.toStringAsFixed(2),
+                        widget.offer.pricePerKw.toStringAsFixed(2),
                         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                       const Text(' PLN / kW', style: TextStyle(fontSize: 12)),
@@ -71,7 +99,7 @@ class OfferEntryWidget extends StatelessWidget {
         ],
       ),
       children: [
-        ListTile(title: Text(offer.description ?? '')),
+        ListTile(title: Text(widget.offer.description ?? '')),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Table(
@@ -82,7 +110,7 @@ class OfferEntryWidget extends StatelessWidget {
                   Container(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${offer.pricePerKw.toStringAsFixed(2)} PLN',
+                      '${widget.offer.pricePerKw.toStringAsFixed(2)} PLN',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -94,7 +122,7 @@ class OfferEntryWidget extends StatelessWidget {
                   Container(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${offer.areaPerKw.toStringAsFixed(2)} m²',
+                      '${widget.offer.areaPerKw.toStringAsFixed(2)} m²',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -106,7 +134,7 @@ class OfferEntryWidget extends StatelessWidget {
                   Container(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${offer.temperatureLossCoefficient.toStringAsFixed(2)} W / °C',
+                      '${widget.offer.temperatureLossCoefficient.toStringAsFixed(2)} W / °C',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -115,6 +143,13 @@ class OfferEntryWidget extends StatelessWidget {
             ],
           ),
         ),
+        outputData == null
+            ? Padding(padding: const EdgeInsets.all(8.0), child: Center(child: CircularProgressIndicator()))
+            : FvEconomyChartWidget(
+              yearlyResults: outputData!.yearlyResults,
+              upfrontInvestmentCost: outputData!.upfrontInvestmentCost,
+              showTable: false,
+            ),
       ],
     );
   }
