@@ -109,7 +109,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
             },
           ),
         ),

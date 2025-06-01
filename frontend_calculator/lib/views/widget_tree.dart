@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/alarm_page.dart';
+import 'package:frontend_calculator/views/pages/location_page.dart';
+import 'package:frontend_calculator/views/pages/measurements_page.dart';
 import 'package:frontend_calculator/views/pages/offer_search_page.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/chatbot_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
 import 'package:frontend_calculator/views/pages/home_page.dart';
 import 'package:frontend_calculator/views/pages/profil_page.dart';
+import 'package:frontend_calculator/views/pages/rules_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/notifiers.dart';
 import 'widgets/navbar_widget.dart';
 
-List<Widget> pages = [const HomePage(), const CalculatorPage(), DictionaryPage(), const OfferSearchPage()];
+List<Widget> pages = [
+  const HomePage(),
+  const CalculatorPage(),
+  DictionaryPage(),
+  const MeasurementsPage(),
+  const OfferSearchPage(),
+  const LocationPage(),
+  const RulesPage(),
+  AlarmPage()
+];
 
 class WidgetTree extends StatelessWidget {
   const WidgetTree({super.key});

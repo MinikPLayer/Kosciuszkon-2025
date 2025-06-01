@@ -65,14 +65,20 @@ class AlarmPage extends StatelessWidget {
     ),
   ];
 
+  AlarmPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alarmy i zdarzenia'),
+        title: const Text('Alarmy i zdarzenia'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             onPressed: () {
               _showFilterDialog(context);
             },
@@ -84,10 +90,13 @@ class AlarmPage extends StatelessWidget {
           _buildStatsHeader(),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(16),
               itemCount: alarmEvents.length,
               itemBuilder: (context, index) {
-                return _buildAlarmCard(alarmEvents[index]);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildAlarmCard(alarmEvents[index]),
+                );
               },
             ),
           ),
@@ -102,8 +111,12 @@ class AlarmPage extends StatelessWidget {
     final totalActive = criticalCount + warningCount;
 
     return Container(
-      padding: EdgeInsets.all(16),
-      color: Colors.grey[100],
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -134,7 +147,7 @@ class AlarmPage extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, color: color, size: 28),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
@@ -187,17 +200,19 @@ class AlarmPage extends StatelessWidget {
     }
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      color: bgColor,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(icon, color: textColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     alarm.title,
@@ -217,16 +232,16 @@ class AlarmPage extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(alarm.description),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             if (alarm.severity.index <= AlarmSeverity.high.index)
               _buildAlarmDetails(alarm, textColor),
-            SizedBox(height: 4),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Icon(Icons.location_on, size: 14, color: Colors.grey),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text(
                   '${alarm.location} • ${alarm.deviceName}',
                   style: TextStyle(
@@ -243,70 +258,69 @@ class AlarmPage extends StatelessWidget {
   }
 
   Widget _buildAlarmDetails(AlarmEvent alarm, Color textColor) {
-  return Container(
-    padding: EdgeInsets.all(8),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: textColor.withOpacity(0.3)),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Aktualna wartość:',
-              style: TextStyle(fontSize: 12),
-            ),
-            Text(
-              alarm.value,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: textColor,
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: textColor.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Aktualna wartość:',
+                style: TextStyle(fontSize: 12),
+              ),
+              Text(
+                alarm.value,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Próg alarmowy:',
+                style: TextStyle(fontSize: 12),
+              ),
+              Text(
+                alarm.threshold,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          if (alarm.type == AlarmType.powerConsumption)
+            ElevatedButton.icon(
+              onPressed: () {
+                // Akcja np. wyłączenie urządzenia
+              },
+              icon: Icon(Icons.power_settings_new, size: 16),
+              label: const Text('Wyłącz'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                textStyle: const TextStyle(fontSize: 12),
               ),
             ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Próg alarmowy:',
-              style: TextStyle(fontSize: 12),
-            ),
-            Text(
-              alarm.threshold,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        if (alarm.type == AlarmType.powerConsumption)
-          ElevatedButton.icon(
-            onPressed: () {
-              // Akcja np. wyłączenie urządzenia
-            },
-            icon: Icon(Icons.power_settings_new, size: 16),
-            label: Text('Wyłącz'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              textStyle: TextStyle(fontSize: 12),
-            ),
-          ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Filtruj alarmy'),
+          title: const Text('Filtruj alarmy'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -319,11 +333,11 @@ class AlarmPage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Anuluj'),
+              child: const Text('Anuluj'),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Zastosuj'),
+              child: const Text('Zastosuj'),
             ),
           ],
         );
@@ -333,7 +347,7 @@ class AlarmPage extends StatelessWidget {
 
   Widget _buildFilterChip(String label, AlarmSeverity severity) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: FilterChip(
         label: Text(label),
         selected: true,

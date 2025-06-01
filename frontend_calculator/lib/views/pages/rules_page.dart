@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class RulesPage extends StatefulWidget {
+  const RulesPage({super.key});
   @override
   _RulesPageState createState() => _RulesPageState();
 }

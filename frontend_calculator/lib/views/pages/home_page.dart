@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_calculator/views/pages/alarm_page.dart';
-import 'package:frontend_calculator/views/pages/location_page.dart';
-import 'package:frontend_calculator/views/pages/offer_search_page.dart';
-import 'package:frontend_calculator/views/pages/rules_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_calculator/views/pages/calculator_page.dart';
-import 'package:frontend_calculator/views/pages/dictionary_page.dart';
-import 'package:frontend_calculator/views/pages/measurements_page.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,16 +12,12 @@ class HomePage extends StatelessWidget {
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
-
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
               children: [
                 _buildWelcomeHeader(),
                 const SizedBox(height: 24),
                 _buildQuickActions(context),
-                // const SizedBox(height: 24),
-                // _buildRecentCalculations(),
               ],
             ),
           ),
@@ -39,7 +29,6 @@ class HomePage extends StatelessWidget {
   Widget _buildWelcomeHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
       children: [
         Text(
           'Witaj w Evergy!',
@@ -65,95 +54,71 @@ class HomePage extends StatelessWidget {
           mainAxisSpacing: 16,
           children: [
             _buildActionCard(
-              context,
               icon: Icons.calculate,
-              title: 'Nowa kalkulacja',
+              title: 'Kalkulator',
               color: Colors.blue,
-              page: const CalculatorPage(),
+              onTap: () => selectedPageNotifier.value = 1,
             ),
             _buildActionCard(
-              context,
-              icon: Icons.shopping_bag,
-              title: 'Oferta',
-              color: Colors.orange,
-              page: const OfferSearchPage(),
-            ),
-            _buildActionCard(
-              context,
               icon: Icons.book,
               title: 'Słownik',
               color: Colors.purple.shade100,
-              page: DictionaryPage(),
+              onTap: () => selectedPageNotifier.value = 2,
             ),
             _buildActionCard(
-              context,
+              icon: Icons.analytics,
+              title: 'Analizy',
+              color: Colors.red.shade300,
+              onTap: () => selectedPageNotifier.value = 3,
+            ),
+            _buildActionCard(
+              icon: Icons.shopping_bag,
+              title: 'Oferta',
+              color: Colors.orange,
+              onTap: () => selectedPageNotifier.value = 4,
+            ),
+            _buildActionCard(
               icon: Icons.home,
               title: 'SmartHome',
-              color: Colors.purple.shade100,
-              page: LocationPage(),
+              color: Colors.green.shade200,
+              onTap: () => selectedPageNotifier.value = 5,
             ),
             _buildActionCard(
-              context,
-              icon: Icons.area_chart,
-              title: 'Wykresy',
-              color: Colors.red.shade300,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => MeasurementsPage()),
-                );
-              },
-            ),
-            _buildActionCard(
-              context,
               icon: Icons.list,
               title: 'Zasady',
               color: Colors.purple.shade400,
-              page: RulesPage(),
+              onTap: () => selectedPageNotifier.value = 6,
             ),
             _buildActionCard(
-              context,
               icon: Icons.alarm,
               title: 'Alarmy',
               color: Colors.yellow.shade600,
-              page: AlarmPage(),
+              onTap: () => selectedPageNotifier.value = 7,
             ),
-            _buildActionCard(
-              context,
-              icon: Icons.history,
-              title: 'Historia',
-              color: Colors.green,
-              onTap: () {
-                // TODO: Implement history
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Historia kalkulacji')));
-              },
-            ),
+            // _buildActionCard(
+            //   icon: Icons.history,
+            //   title: 'Historia',
+            //   color: Colors.green,
+            //   onTap: () => _showNotImplemented(context, 'Historia kalkulacji'),
+            // ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildActionCard(
-    BuildContext context, {
+  Widget _buildActionCard({
     required IconData icon,
     required String title,
     required Color color,
-    Widget? page,
-    VoidCallback? onTap,
+    required VoidCallback onTap,
   }) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap:
-            onTap ??
-            () {
-              if (page != null) {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-              }
-            },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -168,6 +133,14 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  void _showNotImplemented(BuildContext context, String label) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$label - funkcjonalność w trakcie implementacji')),
+    );
+  }
+}
+
 
   // Widget _buildRecentCalculations() {
   //   return Column(
@@ -197,4 +170,4 @@ class HomePage extends StatelessWidget {
   //     ],
   //   );
   // }
-}
+

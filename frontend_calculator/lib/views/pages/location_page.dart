@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
 
 class LocationPage extends StatelessWidget {
+  const LocationPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'System IoT - Zarządzanie lokacjami',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LocationSelectionPage(),
-        '/location': (context) => LocationDetailPage(),
-        '/devices': (context) => DevicesListPage(),
-        '/device': (context) => DeviceDetailPage(),
-      },
+    return Scaffold(
+      body: LocationSelectionPage(),
     );
   }
 }
@@ -154,10 +145,11 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
     });
 
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.pushNamed(
+      Navigator.push(
         context,
-        '/location',
-        arguments: locations.firstWhere((loc) => loc.id == locationId),
+        MaterialPageRoute(
+          builder: (context) => LocationDetailPage(location: locations.firstWhere((loc) => loc.id == locationId)),
+        ),
       );
     });
   }
@@ -167,6 +159,10 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Twoje lokacje'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -233,10 +229,11 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.pushNamed(
+                      Navigator.push(
                         context,
-                        '/devices',
-                        arguments: location,
+                        MaterialPageRoute(
+                          builder: (context) => DevicesListPage(location: location),
+                        ),
                       );
                     },
                     child: _buildInfoChip(
@@ -271,14 +268,19 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
 }
 
 class LocationDetailPage extends StatelessWidget {
+  final Location location;
+
+  const LocationDetailPage({required this.location, super.key});
+
   @override
   Widget build(BuildContext context) {
-    final Location location =
-        ModalRoute.of(context)!.settings.arguments as Location;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(location.name),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -298,10 +300,11 @@ class LocationDetailPage extends StatelessWidget {
             Divider(),
             InkWell(
               onTap: () {
-                Navigator.pushNamed(
+                Navigator.push(
                   context,
-                  '/devices',
-                  arguments: location,
+                  MaterialPageRoute(
+                    builder: (context) => DevicesListPage(location: location),
+                  ),
                 );
               },
               child: ListTile(
@@ -343,14 +346,19 @@ class LocationDetailPage extends StatelessWidget {
 }
 
 class DevicesListPage extends StatelessWidget {
+  final Location location;
+
+  const DevicesListPage({required this.location, super.key});
+
   @override
   Widget build(BuildContext context) {
-    final Location location =
-        ModalRoute.of(context)!.settings.arguments as Location;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Urządzenia - ${location.name}'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(16),
@@ -361,10 +369,11 @@ class DevicesListPage extends StatelessWidget {
             margin: EdgeInsets.only(bottom: 12),
             child: InkWell(
               onTap: () {
-                Navigator.pushNamed(
+                Navigator.push(
                   context,
-                  '/device',
-                  arguments: device,
+                  MaterialPageRoute(
+                    builder: (context) => DeviceDetailPage(device: device),
+                  ),
                 );
               },
               child: Padding(
@@ -412,14 +421,19 @@ class DevicesListPage extends StatelessWidget {
 }
 
 class DeviceDetailPage extends StatelessWidget {
+  final Device device;
+
+  const DeviceDetailPage({required this.device, super.key});
+
   @override
   Widget build(BuildContext context) {
-    final Device device =
-        ModalRoute.of(context)!.settings.arguments as Device;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(device.name),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
