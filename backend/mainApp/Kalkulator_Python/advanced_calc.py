@@ -4,11 +4,13 @@ class AdvancedCalcData:
     def __init__(self,
                 fv_system_size_kw: float,
                 energy_storage_size_kwh: float,
+                single_year_consumption_kwh: float,
                 consumption_kwh_at_time_func: callable,
                 fv_production_kwh_per_panel_at_time_func: callable,
                 first_year_energy_buying_price: float,
                 first_year_energy_selling_price: float,
                 fv_system_installation_cost_per_kw: float,
+                es_system_installation_cost_per_kw: float,
                 yearly_energy_price_increase_percentage: float,
                 fv_degradation_percentage_per_year: float,
                 energy_storage_degradation_percentage_per_year: float):
@@ -23,6 +25,8 @@ class AdvancedCalcData:
         self.energy_storage_degradation_percentage_per_year = energy_storage_degradation_percentage_per_year / 100.0
         self.consumption_kwh_at_time_func = consumption_kwh_at_time_func
         self.fv_production_kwh_per_panel_at_time_func = fv_production_kwh_per_panel_at_time_func
+        self.single_year_consumption_kwh = single_year_consumption_kwh
+        self.es_system_installation_cost_per_kw = es_system_installation_cost_per_kw
 
     def get_fotovoltaic_system_hourly_production_at(self, efficiency: float, day_of_year: int, hour: int) -> float:
         """Calculate the hourly output of the photovoltaic system based on its size and output percentage."""
@@ -79,7 +83,10 @@ class AdvancedCalc:
             raise ValueError("Number of years must be at least 1.")
 
         result = AdvancedCalcResult()
-        result.upfront_investment_cost = data.fv_system_installation_cost_per_kw * data.fv_system_size_kw
+        result.upfront_investment_cost = (
+            data.fv_system_installation_cost_per_kw * data.fv_system_size_kw +
+            data.es_system_installation_cost_per_kw * data.energy_storage_size_kwh
+        )
 
         current_buying_price = data.first_year_energy_buying_price
         current_selling_price = data.first_year_energy_selling_price

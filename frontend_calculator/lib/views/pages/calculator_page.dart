@@ -20,9 +20,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
   double firstYearEnergyBuyingPrice = 1.23;
   double firstYearEnergySellingPrice = 0.5162;
   double fvSystemInstallationCostPerKw = 5000.0;
-  double fvSystemSizeKw = 1.0;
+  double fvSystemSizeKw = 1.5;
   double yearlyEnergyPriceIncreasePercentage = 7.1;
-  int calculationYears = 10;
+
+  double energyStorageCapacity = 1.0;
+  double energyStorageInstallationCostPerKw = 2000.0;
+  int calculationYears = 40;
 
   // Wyniki
   double upfrontInvestmentCost = 0.0;
@@ -44,8 +47,6 @@ class _CalculatorPageState extends State<CalculatorPage> {
       // final storageYears = widget.userData != null
       //   ? double.tryParse(widget.userData!['storageYears']) ?? 0.0
       //   : 0.0;
-      //TODO Jakbyśmy chcieli pobierać rzeczywiste dane użytkownika, to byśmy musieli dodać odpowiednie pola do widgetu
-      final storageCapacity = 10.0; // Przykładowa wartość
       final response = await http
           .post(
             Uri.parse(_apiUrl),
@@ -53,15 +54,16 @@ class _CalculatorPageState extends State<CalculatorPage> {
             body: json.encode({
               'parameters': {
                 'fv_system_size_kw': fvSystemSizeKw,
-                'energy_storage_size_kwh': storageCapacity, // storageCapacity,
+                'energy_storage_size_kwh': energyStorageCapacity, // storageCapacity,
+                'single_year_consumption_kwh': singleYearEnergyConsumption,
                 'first_year_energy_buying_price': firstYearEnergyBuyingPrice,
                 'first_year_energy_selling_price': firstYearEnergySellingPrice,
                 'fv_system_installation_cost_per_kw': fvSystemInstallationCostPerKw,
+                'es_system_installation_cost_per_kw': energyStorageInstallationCostPerKw,
                 'yearly_energy_price_increase_percentage': yearlyEnergyPriceIncreasePercentage,
                 'fv_degradation_percentage_per_year': 0.5,
                 'energy_storage_degradation_percentage_per_year': 0.5,
                 'years': calculationYears,
-                'default_consumption': singleYearEnergyConsumption / (24 * 365),
               },
             }),
           )
@@ -141,20 +143,42 @@ class _CalculatorPageState extends State<CalculatorPage> {
               onChanged: (v) => singleYearEnergyConsumption = v,
             ),
             _buildNumberInput(
-              label: 'Całkowita moc instalacji (kW)',
-              value: fvSystemSizeKw,
-              onChanged: (v) => fvSystemSizeKw = v,
-            ),
-            _buildNumberInput(
-              label: 'Koszt instalacji 1kW paneli (PLN/kW)',
-              value: fvSystemInstallationCostPerKw,
-              onChanged: (v) => fvSystemInstallationCostPerKw = v,
-            ),
-            _buildNumberInput(
               label: 'Liczba lat obliczeń',
               value: calculationYears.toDouble(),
               isInt: true,
               onChanged: (v) => calculationYears = v.toInt(),
+            ),
+            ExpansionTile(
+              title: const Text('Panele fotowoltaiczne'),
+              childrenPadding: EdgeInsets.all(8.0),
+              children: [
+                _buildNumberInput(
+                  label: 'Całkowita moc instalacji (kW)',
+                  value: fvSystemSizeKw,
+                  onChanged: (v) => fvSystemSizeKw = v,
+                ),
+                _buildNumberInput(
+                  label: 'Koszt instalacji 1kW paneli (PLN/kW)',
+                  value: fvSystemInstallationCostPerKw,
+                  onChanged: (v) => fvSystemInstallationCostPerKw = v,
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: const Text('Magazyn energii'),
+              childrenPadding: EdgeInsets.all(8.0),
+              children: [
+                _buildNumberInput(
+                  label: 'Całkowita pojemność magazynu (kWh)',
+                  value: energyStorageCapacity,
+                  onChanged: (v) => energyStorageCapacity = v,
+                ),
+                _buildNumberInput(
+                  label: 'Koszt instalacji magazynu (PLN/kWh)',
+                  value: energyStorageInstallationCostPerKw,
+                  onChanged: (v) => energyStorageInstallationCostPerKw = v,
+                ),
+              ],
             ),
             ExpansionTile(
               title: const Text('Zaawansowane'),
@@ -165,11 +189,6 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   label: 'Cena zakupu energii w pierwszym roku (PLN/kWh)',
                   value: firstYearEnergyBuyingPrice,
                   onChanged: (v) => firstYearEnergyBuyingPrice = v,
-                ),
-                _buildNumberInput(
-                  label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
-                  value: firstYearEnergySellingPrice,
-                  onChanged: (v) => firstYearEnergySellingPrice = v,
                 ),
                 _buildNumberInput(
                   label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
