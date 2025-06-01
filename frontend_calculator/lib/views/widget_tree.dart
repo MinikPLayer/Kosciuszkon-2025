@@ -13,16 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/notifiers.dart';
 import 'widgets/navbar_widget.dart';
 
-List<Widget> pages = [
-  const HomePage(),
-  const CalculatorPage(),
-  DictionaryPage(),
-  const MeasurementsPage(),
-  const OfferSearchPage(),
-  const LocationPage(),
-  const RulesPage(),
-  AlarmPage(),
-];
+List<Widget> pages = [const HomePage(), const CalculatorPage(), ProfilePage(userData: ProfilePage.getDefaultProfile())];
 
 class WidgetTree extends StatelessWidget {
   const WidgetTree({super.key});

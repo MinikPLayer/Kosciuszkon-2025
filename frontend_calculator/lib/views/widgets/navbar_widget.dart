@@ -1,4 +1,3 @@
-
 import '../../../data/notifiers.dart';
 import 'package:flutter/material.dart';
 
@@ -14,10 +13,7 @@ class _NavbarWidgetState extends State<NavbarWidget> with SingleTickerProviderSt
 
   @override
   void initState() {
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
+    _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
     super.initState();
   }
 
@@ -35,124 +31,25 @@ class _NavbarWidgetState extends State<NavbarWidget> with SingleTickerProviderSt
         return BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 1
-                    ? const Icon(Icons.home_outlined, key: ValueKey('selected'))
-                    : const Icon(Icons.home, key: ValueKey('unselected')),
-              ),
+              icon:
+                  selectedPage == 0
+                      ? const Icon(Icons.home_outlined, key: ValueKey('selected'))
+                      : const Icon(Icons.home, key: ValueKey('unselected')),
               label: 'Strona główna',
             ),
             BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 1
-                    ? const Icon(Icons.calculate, key: ValueKey('selected'))
-                    : const Icon(Icons.calculate_outlined, key: ValueKey('unselected')),
-              ),
+              icon:
+                  selectedPage == 1
+                      ? const Icon(Icons.calculate, key: ValueKey('selected'))
+                      : const Icon(Icons.calculate_outlined, key: ValueKey('unselected')),
               label: 'Kalkulator',
             ),
             BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 2
-                    ? const Icon(Icons.book, key: ValueKey('selected'))
-                    : const Icon(Icons.book_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'Słownik pojęć',
-            ),
-            BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 3
-                    ? const Icon(Icons.analytics, key: ValueKey('selected'))
-                    : const Icon(Icons.analytics_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'Analizy',
-            ),
-            BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 4
-                    ? const Icon(Icons.shopping_bag, key: ValueKey('selected'))
-                    : const Icon(Icons.shopping_bag_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'Oferty',
-            ),
-            BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 5
-                    ? const Icon(Icons.home, key: ValueKey('selected'))
-                    : const Icon(Icons.home_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'SmartHome',
-            ),
-             BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 6
-                    ? const Icon(Icons.list, key: ValueKey('selected'))
-                    : const Icon(Icons.list_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'Zasady',
-            ),
-             BottomNavigationBarItem(
-              icon: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return RotationTransition(
-                    turns: animation,
-                    child: child,
-                  );
-                },
-                child: selectedPage == 7
-                    ? const Icon(Icons.alarm, key: ValueKey('selected'))
-                    : const Icon(Icons.alarm_outlined, key: ValueKey('unselected')),
-              ),
-              label: 'Alarmy',
+              icon:
+                  selectedPage == 2
+                      ? const Icon(Icons.person, key: ValueKey('selected'))
+                      : const Icon(Icons.person_outline, key: ValueKey('unselected')),
+              label: 'Użytkownik',
             ),
           ],
           currentIndex: selectedPage,

@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
 
   const ProfilePage({super.key, required this.userData});
+
+  static Map<String, Object> getDefaultProfile() => {
+    'email': 'example@email.com',
+    'userType': 'Osoba prywatna',
+    'voivodeship': 'Mazowieckie',
+    'buildingType': 'Dom jednorodzinny',
+    'orientation': 'Południe',
+    'roofType': 'Dachówka ceramiczna',
+    'roofAngle': 30.0,
+    'storageCapacity': '10',
+    'storageYears': '2',
+  };
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -131,11 +144,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mój Profil'),
-        backgroundColor: Colors.green,
         actions: [
           IconButton(icon: Icon(_isEditing ? Icons.close : Icons.edit), onPressed: _toggleEdit),
           if (_isEditing) IconButton(icon: const Icon(Icons.save), onPressed: _saveChanges),
         ],
+        leading: buildBackButton(),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
