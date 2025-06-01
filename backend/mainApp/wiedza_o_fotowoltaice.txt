@@ -47,3 +47,29 @@ Odpowiedź: Tak, magazyn energii pozwala na przechowywanie nadwyżek energii do 
 Pytanie: Jak mogę uzyskać dostęp do bardziej złożonych analiz?
 Odpowiedź: Możesz uzyskać bardziej złożone analizy zakładając konto w naszym serwisie. Wystarczy, że przejdziesz na stronę "Rejestracja".
 
+Jakie są dostępne dotacje na fotowoltaikę w Polsce w 2025 roku?
+W 2025 roku najpopularniejsze dotacje dla prosumentów to program "Mój Prąd 6.0" oraz ulga termomodernizacyjna. Program "Mój Prąd" wspiera zakup instalacji fotowoltaicznych, magazynów energii i systemów zarządzania energią. Ulga termomodernizacyjna umożliwia odliczenie kosztów od podatku.
+
+Czy mogę połączyć dotację z "Mój Prąd 6.0" z ulgą termomodernizacyjną?
+Tak, można łączyć obie formy wsparcia. Otrzymując dotację z "Mój Prąd 6.0", nadal można odliczyć część poniesionych wydatków w ramach ulgi termomodernizacyjnej. Warto jednak pamiętać, że odliczeniu podlegają tylko te koszty, które nie zostały pokryte dotacją.
+
+Co to jest program "Mój Prąd 6.0"?
+"Mój Prąd 6.0" to program rządowy wspierający inwestycje w odnawialne źródła energii dla prosumentów. W ramach tej edycji można uzyskać dofinansowanie na panele fotowoltaiczne, magazyny energii, systemy zarządzania energią oraz inne urządzenia wspomagające autokonsumpcję.
+
+Na co można przeznaczyć pieniądze z programu "Mój Prąd 6.0"?
+Środki z programu "Mój Prąd 6.0" można przeznaczyć na zakup i montaż instalacji fotowoltaicznej, magazynów energii elektrycznej, magazynów ciepła, systemów HEMS/EMS oraz na elementy służące zwiększeniu autokonsumpcji energii.
+
+Czym jest ulga termomodernizacyjna?
+Ulga termomodernizacyjna to forma odliczenia od podatku dochodowego wydatków poniesionych na modernizację energetyczną domu, w tym montaż paneli fotowoltaicznych. Limit ulgi wynosi 53 000 zł i dotyczy jednego podatnika, niezależnie od liczby realizowanych inwestycji.
+
+Czy ulga termomodernizacyjna przysługuje także właścicielom nowych domów?
+Nie. Ulga termomodernizacyjna przysługuje tylko właścicielom lub współwłaścicielom istniejących budynków mieszkalnych jednorodzinnych. Nowo wybudowane domy nie kwalifikują się do tej ulgi do czasu ich zamieszkania i rozpoczęcia eksploatacji.
+
+Jak długo potrwa nabór wniosków do "Mój Prąd 6.0"?
+Nabór wniosków do "Mój Prąd 6.0" rozpoczął się 1 lutego 2025 roku i potrwa do wyczerpania budżetu lub do końca roku. Warto złożyć wniosek jak najwcześniej, ponieważ zainteresowanie jest bardzo duże.
+
+Czy muszę mieć licznik dwukierunkowy, aby dostać dotację?
+Tak. Aby skorzystać z programu "Mój Prąd", musisz być zarejestrowanym prosumentem, co oznacza posiadanie licznika dwukierunkowego oraz zawartą umowę z operatorem sieci energetycznej.
+
+Gdzie można złożyć wniosek o dofinansowanie z programu "Mój Prąd"?
+Wniosek można złożyć wyłącznie elektronicznie za pośrednictwem strony gov.pl (sekcja programu Mój Prąd). Konieczne jest posiadanie profilu zaufanego lub podpisu elektronicznego.

@@ -49,7 +49,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       final response = await ApiService.sendChatMessage(userMessage);
       
       setState(() {
-        _addBotMessage(response['answer']['response']);
+        _addBotMessage(response['answer'] ?? 'Przepraszam, nie rozumiem pytania.');
       });
     } catch (e) {
       setState(() {
