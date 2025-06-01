@@ -94,9 +94,13 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
         if (snapshot.hasData) {
           try {
             final decoded = json.decode(snapshot.data as String);
-           
-            _measurements.clear();
-            _measurements.add(Map<String, dynamic>.from(decoded['measurements']));
+            if (decoded is Map && decoded.containsKey('measurements')) {
+              _measurements.addAll(
+                List<Map<String, dynamic>>.from(decoded['measurements']),
+              );
+            }
+            
+
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _listScrollController.animateTo(
                 _listScrollController.position.maxScrollExtent,
