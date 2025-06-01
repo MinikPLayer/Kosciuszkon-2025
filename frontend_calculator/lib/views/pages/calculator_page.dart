@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:frontend_calculator/utils.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -116,7 +117,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Kalkulator PV')),
+      appBar: AppBar(title: const Text('Kalkulator PV'), leading: buildBackButton()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 
 class RulesPage extends StatefulWidget {
   const RulesPage({super.key});
@@ -18,21 +19,8 @@ class _RulesPageState extends State<RulesPage> {
       deviceId: 'thermo1',
       deviceName: 'Termostat salon',
       isActive: true,
-      conditions: [
-        Condition(
-          type: ConditionType.temperature,
-          operator: '>',
-          value: '22',
-          unit: '°C',
-        ),
-      ],
-      actions: [
-        Action(
-          type: ActionType.turnOff,
-          targetDeviceId: 'thermo1',
-          targetDeviceName: 'Termostat salon',
-        ),
-      ],
+      conditions: [Condition(type: ConditionType.temperature, operator: '>', value: '22', unit: '°C')],
+      actions: [Action(type: ActionType.turnOff, targetDeviceId: 'thermo1', targetDeviceName: 'Termostat salon')],
     ),
     Rule(
       id: '2',
@@ -44,26 +32,11 @@ class _RulesPageState extends State<RulesPage> {
       deviceName: 'Czujnik ruchu',
       isActive: true,
       conditions: [
-        Condition(
-          type: ConditionType.motion,
-          operator: '==',
-          value: 'detected',
-          unit: '',
-        ),
-        Condition(
-          type: ConditionType.time,
-          operator: 'between',
-          value: '22:00-06:00',
-          unit: '',
-        ),
+        Condition(type: ConditionType.motion, operator: '==', value: 'detected', unit: ''),
+        Condition(type: ConditionType.time, operator: 'between', value: '22:00-06:00', unit: ''),
       ],
       actions: [
-        Action(
-          type: ActionType.turnOn,
-          targetDeviceId: 'light1',
-          targetDeviceName: 'Światło hol',
-          duration: '5m',
-        ),
+        Action(type: ActionType.turnOn, targetDeviceId: 'light1', targetDeviceName: 'Światło hol', duration: '5m'),
       ],
     ),
     Rule(
@@ -75,14 +48,7 @@ class _RulesPageState extends State<RulesPage> {
       deviceId: 'thermo2',
       deviceName: 'Termostat pokój',
       isActive: false,
-      conditions: [
-        Condition(
-          type: ConditionType.temperature,
-          operator: '<',
-          value: '15',
-          unit: '°C',
-        ),
-      ],
+      conditions: [Condition(type: ConditionType.temperature, operator: '<', value: '15', unit: '°C')],
       actions: [
         Action(
           type: ActionType.setValue,
@@ -100,12 +66,8 @@ class _RulesPageState extends State<RulesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Zarządzanie regułami'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _showAddRuleDialog(context),
-          ),
-        ],
+        actions: [IconButton(icon: Icon(Icons.add), onPressed: () => _showAddRuleDialog(context))],
+        leading: buildBackButton(),
       ),
       body: Column(
         children: [
@@ -114,10 +76,7 @@ class _RulesPageState extends State<RulesPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    'Reguły automatyzacji',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  child: Text('Reguły automatyzacji', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ),
                 Switch(
                   value: true,
@@ -156,10 +115,7 @@ class _RulesPageState extends State<RulesPage> {
             });
           },
         ),
-        title: Text(
-          rule.name,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(rule.name, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(rule.description),
         children: [
           Padding(
@@ -168,32 +124,20 @@ class _RulesPageState extends State<RulesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 8),
-                Text(
-                  'Warunki:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Warunki:', style: TextStyle(fontWeight: FontWeight.bold)),
                 ...rule.conditions.map((condition) => _buildConditionItem(condition)).toList(),
                 SizedBox(height: 16),
-                Text(
-                  'Akcje:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                Text('Akcje:', style: TextStyle(fontWeight: FontWeight.bold)),
                 ...rule.actions.map((action) => _buildActionItem(action)).toList(),
                 SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(
-                      onPressed: () => _editRule(rule),
-                      child: Text('Edytuj'),
-                    ),
+                    TextButton(onPressed: () => _editRule(rule), child: Text('Edytuj')),
                     SizedBox(width: 8),
                     TextButton(
                       onPressed: () => _deleteRule(rule.id),
-                      child: Text(
-                        'Usuń',
-                        style: TextStyle(color: Colors.red),
-                      ),
+                      child: Text('Usuń', style: TextStyle(color: Colors.red)),
                     ),
                   ],
                 ),
@@ -210,14 +154,9 @@ class _RulesPageState extends State<RulesPage> {
       padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(_getConditionIcon(condition.type),
-              size: 20, color: Colors.blue),
+          Icon(_getConditionIcon(condition.type), size: 20, color: Colors.blue),
           SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              _formatConditionText(condition),
-              style: TextStyle(fontSize: 14)),
-          ),
+          Expanded(child: Text(_formatConditionText(condition), style: TextStyle(fontSize: 14))),
         ],
       ),
     );
@@ -228,14 +167,9 @@ class _RulesPageState extends State<RulesPage> {
       padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Icon(_getActionIcon(action.type),
-              size: 20, color: Colors.green),
+          Icon(_getActionIcon(action.type), size: 20, color: Colors.green),
           SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              _formatActionText(action),
-              style: TextStyle(fontSize: 14)),
-          ),
+          Expanded(child: Text(_formatActionText(action), style: TextStyle(fontSize: 14))),
         ],
       ),
     );
@@ -309,25 +243,23 @@ class _RulesPageState extends State<RulesPage> {
   void _deleteRule(String ruleId) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Usunąć regułę?'),
-        content: Text('Czy na pewno chcesz usunąć tę regułę?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Anuluj'),
+      builder:
+          (context) => AlertDialog(
+            title: Text('Usunąć regułę?'),
+            content: Text('Czy na pewno chcesz usunąć tę regułę?'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: Text('Anuluj')),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    rules.removeWhere((rule) => rule.id == ruleId);
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text('Usuń', style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                rules.removeWhere((rule) => rule.id == ruleId);
-              });
-              Navigator.pop(context);
-            },
-            child: Text('Usuń', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -347,18 +279,12 @@ class _RulesPageState extends State<RulesPage> {
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nazwa reguły',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: InputDecoration(labelText: 'Nazwa reguły', border: OutlineInputBorder()),
                 ),
                 SizedBox(height: 16),
                 TextField(
                   controller: descController,
-                  decoration: InputDecoration(
-                    labelText: 'Opis',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: InputDecoration(labelText: 'Opis', border: OutlineInputBorder()),
                 ),
                 SizedBox(height: 16),
                 // Tutaj można dodać bardziej zaawansowany formularz do dodawania warunków i akcji
@@ -367,10 +293,7 @@ class _RulesPageState extends State<RulesPage> {
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Anuluj'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text('Anuluj')),
             ElevatedButton(
               onPressed: () {
                 if (isEditing) {
@@ -382,18 +305,20 @@ class _RulesPageState extends State<RulesPage> {
                 } else {
                   // Dodaj nową regułę
                   setState(() {
-                    rules.add(Rule(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      name: nameController.text,
-                      description: descController.text,
-                      locationId: '1', // Tymczasowo - powinno być wybrane z listy
-                      locationName: 'Dom główny',
-                      deviceId: 'new-device', // Tymczasowo
-                      deviceName: 'Nowe urządzenie',
-                      isActive: true,
-                      conditions: [],
-                      actions: [],
-                    ));
+                    rules.add(
+                      Rule(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        name: nameController.text,
+                        description: descController.text,
+                        locationId: '1', // Tymczasowo - powinno być wybrane z listy
+                        locationName: 'Dom główny',
+                        deviceId: 'new-device', // Tymczasowo
+                        deviceName: 'Nowe urządzenie',
+                        isActive: true,
+                        conditions: [],
+                        actions: [],
+                      ),
+                    );
                   });
                 }
                 Navigator.pop(context);
@@ -433,13 +358,7 @@ class Rule {
   });
 }
 
-enum ConditionType {
-  temperature,
-  humidity,
-  motion,
-  time,
-  deviceStatus,
-}
+enum ConditionType { temperature, humidity, motion, time, deviceStatus }
 
 class Condition {
   final ConditionType type;
@@ -447,20 +366,10 @@ class Condition {
   final String value;
   final String unit;
 
-  Condition({
-    required this.type,
-    required this.operator,
-    required this.value,
-    required this.unit,
-  });
+  Condition({required this.type, required this.operator, required this.value, required this.unit});
 }
 
-enum ActionType {
-  turnOn,
-  turnOff,
-  setValue,
-  notify,
-}
+enum ActionType { turnOn, turnOff, setValue, notify }
 
 class Action {
   final ActionType type;

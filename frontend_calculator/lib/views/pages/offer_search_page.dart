@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_calculator/data/models/offer_model.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:frontend_calculator/utils.dart';
 import 'package:frontend_calculator/views/widgets/offer_entry_widget.dart';
 
@@ -123,7 +124,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Oferta')),
+      appBar: AppBar(title: const Text('Oferta'), leading: buildBackButton()),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

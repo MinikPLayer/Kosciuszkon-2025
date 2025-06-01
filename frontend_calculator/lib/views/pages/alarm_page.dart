@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:intl/intl.dart';
 
 class AlarmPage extends StatelessWidget {
@@ -72,10 +73,7 @@ class AlarmPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Alarmy i zdarzenia'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: buildBackButton(),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -93,10 +91,7 @@ class AlarmPage extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               itemCount: alarmEvents.length,
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _buildAlarmCard(alarmEvents[index]),
-                );
+                return Padding(padding: const EdgeInsets.only(bottom: 16), child: _buildAlarmCard(alarmEvents[index]));
               },
             ),
           ),
@@ -112,26 +107,13 @@ class AlarmPage extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(
-            'Aktywne alarmy',
-            '$totalActive',
-            totalActive > 0 ? Colors.red : Colors.green,
-            Icons.warning,
-          ),
-          _buildStatItem(
-            'Krytyczne',
-            '$criticalCount',
-            criticalCount > 0 ? Colors.red : Colors.grey,
-            Icons.error,
-          ),
+          _buildStatItem('Aktywne alarmy', '$totalActive', totalActive > 0 ? Colors.red : Colors.green, Icons.warning),
+          _buildStatItem('Krytyczne', '$criticalCount', criticalCount > 0 ? Colors.red : Colors.grey, Icons.error),
           _buildStatItem(
             'Ostrzeżenia',
             '$warningCount',
@@ -148,21 +130,8 @@ class AlarmPage extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 28),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+        Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -201,9 +170,7 @@ class AlarmPage extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -216,27 +183,19 @@ class AlarmPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     alarm.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: textColor,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
                   ),
                 ),
                 Text(
                   DateFormat('HH:mm').format(alarm.timestamp),
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(alarm.description),
             const SizedBox(height: 8),
-            if (alarm.severity.index <= AlarmSeverity.high.index)
-              _buildAlarmDetails(alarm, textColor),
+            if (alarm.severity.index <= AlarmSeverity.high.index) _buildAlarmDetails(alarm, textColor),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -244,10 +203,7 @@ class AlarmPage extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   '${alarm.location} • ${alarm.deviceName}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -271,30 +227,15 @@ class AlarmPage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Aktualna wartość:',
-                style: TextStyle(fontSize: 12),
-              ),
-              Text(
-                alarm.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
+              Text('Aktualna wartość:', style: TextStyle(fontSize: 12)),
+              Text(alarm.value, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
             ],
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Próg alarmowy:',
-                style: TextStyle(fontSize: 12),
-              ),
-              Text(
-                alarm.threshold,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+              Text('Próg alarmowy:', style: TextStyle(fontSize: 12)),
+              Text(alarm.threshold, style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           if (alarm.type == AlarmType.powerConsumption)
@@ -331,14 +272,8 @@ class AlarmPage extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Anuluj'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Zastosuj'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Anuluj')),
+            ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Zastosuj')),
           ],
         );
       },
@@ -354,9 +289,7 @@ class AlarmPage extends StatelessWidget {
         onSelected: (bool selected) {},
         selectedColor: _getSeverityColor(severity).withOpacity(0.2),
         checkmarkColor: _getSeverityColor(severity),
-        labelStyle: TextStyle(
-          color: _getSeverityColor(severity),
-        ),
+        labelStyle: TextStyle(color: _getSeverityColor(severity)),
       ),
     );
   }
@@ -377,21 +310,9 @@ class AlarmPage extends StatelessWidget {
   }
 }
 
-enum AlarmSeverity {
-  critical,
-  high,
-  warning,
-  medium,
-  info,
-}
+enum AlarmSeverity { critical, high, warning, medium, info }
 
-enum AlarmType {
-  powerConsumption,
-  temperature,
-  deviceInactive,
-  battery,
-  system,
-}
+enum AlarmType { powerConsumption, temperature, deviceInactive, battery, system }
 
 class AlarmEvent {
   final String id;
