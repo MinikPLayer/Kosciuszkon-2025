@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_calculator/data/models/offer_model.dart';
+import 'package:frontend_calculator/views/widgets/fv_economy_chart_widget.dart';
 
 class OfferEntryWidget extends StatelessWidget {
   final OfferModel offer;

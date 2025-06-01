@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/data/models/API.dart';
 import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:frontend_calculator/utils.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:frontend_calculator/views/widgets/fv_economy_chart_widget.dart';
 
 class CalculatorPage extends StatefulWidget {
   const CalculatorPage({super.key});
@@ -15,104 +16,13 @@ class CalculatorPage extends StatefulWidget {
 
 class _CalculatorPageState extends State<CalculatorPage> {
   final _formKey = GlobalKey<FormState>();
-  final _apiUrl = 'http://127.0.0.1:8000/api/calculate/';
 
   // Dane wejściowe
-  double singleYearEnergyConsumption = 1713.0;
-  double firstYearEnergyBuyingPrice = 1.23;
-  double firstYearEnergySellingPrice = 0.5162;
-  double fvSystemInstallationCostPerKw = 5000.0;
-  double fvSystemSizeKw = 1.5;
-  double yearlyEnergyPriceIncreasePercentage = 7.1;
+  FvEconomyChartInputData inputData = FvEconomyChartInputData();
 
-  double energyStorageCapacity = 1.0;
-  double energyStorageInstallationCostPerKw = 2000.0;
-  int calculationYears = 40;
-
-  // Wyniki
   double upfrontInvestmentCost = 0.0;
   List<Map<String, double>> yearlyResults = [];
   bool isLoading = false;
-
-  Future<void> _calculate() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      isLoading = true;
-      yearlyResults.clear();
-    });
-
-    try {
-      // final storageCapacity = widget.userData != null
-      //   ? double.tryParse(widget.userData!['storageCapacity']) ?? 0.0
-      //   : 0.0;
-      // final storageYears = widget.userData != null
-      //   ? double.tryParse(widget.userData!['storageYears']) ?? 0.0
-      //   : 0.0;
-      final response = await http
-          .post(
-            Uri.parse(_apiUrl),
-            headers: {'Content-Type': 'application/json'},
-            body: json.encode({
-              'parameters': {
-                'fv_system_size_kw': fvSystemSizeKw,
-                'energy_storage_size_kwh': energyStorageCapacity, // storageCapacity,
-                'single_year_consumption_kwh': singleYearEnergyConsumption,
-                'first_year_energy_buying_price': firstYearEnergyBuyingPrice,
-                'first_year_energy_selling_price': firstYearEnergySellingPrice,
-                'fv_system_installation_cost_per_kw': fvSystemInstallationCostPerKw,
-                'es_system_installation_cost_per_kw': energyStorageInstallationCostPerKw,
-                'yearly_energy_price_increase_percentage': yearlyEnergyPriceIncreasePercentage,
-                'fv_degradation_percentage_per_year': 0.5,
-                'energy_storage_degradation_percentage_per_year': 0.5,
-                'years': calculationYears,
-              },
-            }),
-          )
-          .timeout(const Duration(seconds: 30));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        // Safely parse the response data
-        setState(() {
-          upfrontInvestmentCost = _parseDouble(data['upfront_investment_cost']);
-          yearlyResults =
-              (data['results_per_year'] as List).map<Map<String, double>>((yearData) {
-                return {
-                  'year': _parseDouble(yearData['year']),
-                  'without_pv': _parseDouble(yearData['non_fv_price']),
-                  'with_pv': _parseDouble(yearData['fv_price']),
-                  'with_pv_full': _parseDouble(yearData['fv_price']) + upfrontInvestmentCost,
-                  'savings': _parseDouble(yearData['savings']),
-                  'es_charge_kwh': _parseDouble(yearData['es_charge_kwh'] ?? 0),
-                  'consumption_kwh': _parseDouble(yearData['consumption_kwh']),
-                  'production_kwh': _parseDouble(yearData['production_kwh']),
-                };
-              }).toList();
-        });
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Connection error: $e')));
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  double _parseDouble(dynamic value) {
-    if (value is int) {
-      return value.toDouble();
-    } else if (value is double) {
-      return value;
-    } else if (value is String) {
-      return double.tryParse(value) ?? 0.0;
-    }
-    return 0.0;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +41,23 @@ class _CalculatorPageState extends State<CalculatorPage> {
     );
   }
 
+  Future<void> calculate() async {
+    setState(() {
+      isLoading = true;
+      yearlyResults.clear();
+    });
+
+    var data = await FvEconomyChartWidget.calculate(context, inputData);
+
+    setState(() {
+      isLoading = false;
+      if (data != null) {
+        upfrontInvestmentCost = data.upfrontInvestmentCost;
+        yearlyResults = data.yearlyResults;
+      }
+    });
+  }
+
   Widget _buildInputSection() {
     return Card(
       child: Padding(
@@ -141,14 +68,14 @@ class _CalculatorPageState extends State<CalculatorPage> {
             const SizedBox(height: 16),
             Utils.buildNumberInput(
               label: 'Roczne zużycie energii (kWh)',
-              value: singleYearEnergyConsumption,
-              onChanged: (v) => singleYearEnergyConsumption = v,
+              value: inputData.singleYearEnergyConsumption,
+              onChanged: (v) => inputData.singleYearEnergyConsumption = v,
             ),
             Utils.buildNumberInput(
               label: 'Liczba lat obliczeń',
-              value: calculationYears.toDouble(),
+              value: inputData.calculationYears.toDouble(),
               isInt: true,
-              onChanged: (v) => calculationYears = v.toInt(),
+              onChanged: (v) => inputData.calculationYears = v.toInt(),
             ),
             ExpansionTile(
               title: const Text('Panele fotowoltaiczne'),
@@ -156,13 +83,13 @@ class _CalculatorPageState extends State<CalculatorPage> {
               children: [
                 Utils.buildNumberInput(
                   label: 'Całkowita moc instalacji (kW)',
-                  value: fvSystemSizeKw,
-                  onChanged: (v) => fvSystemSizeKw = v,
+                  value: inputData.fvSystemSizeKw,
+                  onChanged: (v) => inputData.fvSystemSizeKw = v,
                 ),
                 Utils.buildNumberInput(
                   label: 'Koszt instalacji 1kW paneli (PLN/kW)',
-                  value: fvSystemInstallationCostPerKw,
-                  onChanged: (v) => fvSystemInstallationCostPerKw = v,
+                  value: inputData.fvSystemInstallationCostPerKw,
+                  onChanged: (v) => inputData.fvSystemInstallationCostPerKw = v,
                 ),
               ],
             ),
@@ -172,13 +99,13 @@ class _CalculatorPageState extends State<CalculatorPage> {
               children: [
                 Utils.buildNumberInput(
                   label: 'Całkowita pojemność magazynu (kWh)',
-                  value: energyStorageCapacity,
-                  onChanged: (v) => energyStorageCapacity = v,
+                  value: inputData.energyStorageCapacity,
+                  onChanged: (v) => inputData.energyStorageCapacity = v,
                 ),
                 Utils.buildNumberInput(
                   label: 'Koszt instalacji magazynu (PLN/kWh)',
-                  value: energyStorageInstallationCostPerKw,
-                  onChanged: (v) => energyStorageInstallationCostPerKw = v,
+                  value: inputData.energyStorageInstallationCostPerKw,
+                  onChanged: (v) => inputData.energyStorageInstallationCostPerKw = v,
                 ),
               ],
             ),
@@ -189,18 +116,18 @@ class _CalculatorPageState extends State<CalculatorPage> {
               children: [
                 Utils.buildNumberInput(
                   label: 'Cena zakupu energii w pierwszym roku (PLN/kWh)',
-                  value: firstYearEnergyBuyingPrice,
-                  onChanged: (v) => firstYearEnergyBuyingPrice = v,
+                  value: inputData.firstYearEnergyBuyingPrice,
+                  onChanged: (v) => inputData.firstYearEnergyBuyingPrice = v,
                 ),
                 Utils.buildNumberInput(
                   label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
-                  value: firstYearEnergySellingPrice,
-                  onChanged: (v) => firstYearEnergySellingPrice = v,
+                  value: inputData.firstYearEnergySellingPrice,
+                  onChanged: (v) => inputData.firstYearEnergySellingPrice = v,
                 ),
                 Utils.buildNumberInput(
                   label: 'Roczny wzrost cen energii (%)',
-                  value: yearlyEnergyPriceIncreasePercentage,
-                  onChanged: (v) => yearlyEnergyPriceIncreasePercentage = v,
+                  value: inputData.yearlyEnergyPriceIncreasePercentage,
+                  onChanged: (v) => inputData.yearlyEnergyPriceIncreasePercentage = v,
                 ),
               ],
             ),
@@ -208,7 +135,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
               padding: const EdgeInsets.only(top: 8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                onPressed: isLoading ? null : _calculate,
+                onPressed: isLoading ? null : calculate,
                 child: const Text('Oblicz'),
               ),
             ),
@@ -219,153 +146,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
   }
 
   Widget _buildResultsSection() {
-    if (yearlyResults.isEmpty) {
-      return Container();
-    }
-
-    var everyNth = (yearlyResults.length / 12).ceil();
-    var entries = List.generate((yearlyResults.length / everyNth).floor(), (index) => yearlyResults[index * everyNth]);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-          child:
-              isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: const Text(
-                          'Zysk na przestrzeni lat',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          height: 300,
-                          child: BarChart(
-                            BarChartData(
-                              barGroups:
-                                  entries.asMap().entries.map((entry) {
-                                    final index = entry.key * everyNth;
-                                    final year = entry.value;
-                                    return BarChartGroupData(
-                                      x: index,
-                                      barRods: [
-                                        BarChartRodData(
-                                          toY: (year['without_pv']! - year['with_pv_full']!),
-                                          color:
-                                              (year['without_pv']! - year['with_pv_full']!) > 0
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                          borderRadius: BorderRadius.circular(2),
-                                          width: MediaQuery.sizeOf(context).width / 3 / entries.length,
-                                        ),
-                                      ],
-                                    );
-                                  }).toList(),
-
-                              barTouchData: BarTouchData(
-                                touchTooltipData: BarTouchTooltipData(
-                                  getTooltipItem:
-                                      (group, groupIndex, rod, rodIndex) => BarTooltipItem(
-                                        'Rok ${group.x + 1}\n',
-                                        const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                        children: [
-                                          TextSpan(
-                                            text:
-                                                'Zysk: \n${(entries[groupIndex]['without_pv']! - entries[groupIndex]['with_pv_full']!).toStringAsFixed(2)} zł\n',
-                                            style: const TextStyle(color: Colors.green, fontSize: 12),
-                                          ),
-                                          TextSpan(
-                                            text:
-                                                'Bez paneli: \n${entries[groupIndex]['without_pv']!.toStringAsFixed(2)} zł\n',
-                                            style: const TextStyle(color: Colors.red, fontSize: 12),
-                                          ),
-                                          TextSpan(
-                                            text:
-                                                'Z panelami: \n${entries[groupIndex]['with_pv']!.toStringAsFixed(2)} zł\n',
-                                            style: const TextStyle(color: Colors.blue, fontSize: 12),
-                                          ),
-                                          TextSpan(
-                                            text:
-                                                'Całkowity koszt z panelami: \n${entries[groupIndex]['with_pv_full']!.toStringAsFixed(2)} zł',
-                                            style: const TextStyle(color: Colors.lightBlue, fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                ),
-                              ),
-                              borderData: FlBorderData(show: true),
-                              gridData: FlGridData(show: true),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Text('Tabela obliczeń', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Koszt inwestycji: ${upfrontInvestmentCost.toStringAsFixed(2)} PLN',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text('Roczne koszty energii:', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Table(
-                        border: TableBorder.all(),
-                        children: [
-                          const TableRow(
-                            children: [
-                              Padding(padding: EdgeInsets.all(8.0), child: Text('Rok', textAlign: TextAlign.center)),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Bez PV (PLN)', textAlign: TextAlign.center),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Z PV (PLN)', textAlign: TextAlign.center),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Koszt całkowity z PV (PLN)', textAlign: TextAlign.center),
-                              ),
-                            ],
-                          ),
-                          ...entries.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final year = entry.value;
-                            return TableRow(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text((index + 1).toString(), textAlign: TextAlign.center),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(year['without_pv']!.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(year['with_pv']!.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(year['with_pv_full']!.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ),
-                              ],
-                            );
-                          }),
-                        ],
-                      ),
-                    ],
-                  ),
-        ),
-      ),
-    );
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : FvEconomyChartWidget(
+          upfrontInvestmentCost: upfrontInvestmentCost,
+          yearlyResults: yearlyResults,
+          showTable: true,
+        );
   }
 }
