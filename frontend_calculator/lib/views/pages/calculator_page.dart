@@ -83,6 +83,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
             ExpansionTile(
               title: const Text('Panele fotowoltaiczne'),
               childrenPadding: EdgeInsets.all(8.0),
+              maintainState: true,
               children: [
                 Utils.buildNumberInput(
                   label: 'Całkowita moc instalacji (kW)',
@@ -104,6 +105,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
             ExpansionTile(
               title: const Text('Magazyn energii'),
               childrenPadding: EdgeInsets.all(8.0),
+              maintainState: true,
               children: [
                 Utils.buildNumberInput(
                   label: 'Całkowita pojemność magazynu (kWh)',
@@ -125,6 +127,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
             ExpansionTile(
               title: const Text('Dotacje'),
               childrenPadding: EdgeInsets.all(8.0),
+              maintainState: true,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -159,7 +162,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
             ExpansionTile(
               title: const Text('Parametry energii'),
               childrenPadding: EdgeInsets.all(8.0),
-
+              maintainState: true,
               children: [
                 Utils.buildNumberInput(
                   label: 'Cena zakupu energii w pierwszym roku (PLN/kWh)',

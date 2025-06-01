@@ -17,12 +17,12 @@ class Utils {
           if (value == null || value.isEmpty) return 'Wprowadź wartość';
           final numValue = isInt ? int.tryParse(value) : double.tryParse(value);
           if (numValue == null) return 'Nieprawidłowa wartość';
-          if (numValue <= 0) return 'Wartość musi być dodatnia';
+          if (numValue < 0) return 'Wartość musi być dodatnia';
           return null;
         },
         onChanged: (value) {
           final numValue = isInt ? int.tryParse(value) : double.tryParse(value);
-          if (numValue != null && numValue > 0) {
+          if (numValue != null && numValue >= 0) {
             onChanged(numValue.toDouble());
           }
         },
