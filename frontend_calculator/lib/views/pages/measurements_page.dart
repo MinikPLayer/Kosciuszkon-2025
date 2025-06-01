@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';
 
 class MeasurementsPage extends StatefulWidget {
   const MeasurementsPage({super.key});
@@ -13,7 +14,10 @@ class MeasurementsPage extends StatefulWidget {
 class _MeasurementsPageState extends State<MeasurementsPage> {
   late final WebSocketChannel channel;
   final List<Map<String, dynamic>> _measurements = [];
+  final List<Map<String, dynamic>> _sunlightData = [];
+  final List<Map<String, dynamic>> _storageTempData = [];
   final ScrollController _listScrollController = ScrollController();
+  final Random _random = Random();
 
   @override
   void initState() {
@@ -21,6 +25,51 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
     channel = WebSocketChannel.connect(
       Uri.parse('ws://127.0.0.1:8000/ws/measurements/'),
     );
+    _initializeSimulatedData();
+  }
+
+  void _initializeSimulatedData() {
+    // Inicjalizacja symulowanych danych
+    final now = DateTime.now();
+    for (int i = 0; i < 20; i++) {
+      final time = now.subtract(Duration(minutes: 20 - i));
+      _sunlightData.add({
+        'value': (50 + _random.nextDouble() * 50).toStringAsFixed(2), // 50-100%
+        'saved_at': time.toIso8601String(),
+      });
+      
+      _storageTempData.add({
+        'value': (20 + _random.nextDouble() * 15).toStringAsFixed(2), // 20-35°C
+        'saved_at': time.toIso8601String(),
+      });
+    }
+  }
+
+  void _addSimulatedData() {
+    final now = DateTime.now();
+    
+    // Symulacja nasłonecznienia (wyższe w ciągu dnia)
+    final hour = now.hour;
+    double sunlightValue;
+    if (hour >= 6 && hour <= 18) {
+      sunlightValue = 60 + _random.nextDouble() * 40; // 60-100% w dzień
+    } else {
+      sunlightValue = _random.nextDouble() * 30; // 0-30% w nocy
+    }
+    
+    _sunlightData.add({
+      'value': sunlightValue.toStringAsFixed(2),
+      'saved_at': now.toIso8601String(),
+    });
+    if (_sunlightData.length > 50) _sunlightData.removeAt(0);
+    
+    // Symulacja temperatury magazynów (zależna od nasłonecznienia)
+    final storageTempValue = 20 + (sunlightValue / 100 * 20) + (_random.nextDouble() * 5 - 2.5);
+    _storageTempData.add({
+      'value': storageTempValue.toStringAsFixed(2),
+      'saved_at': now.toIso8601String(),
+    });
+    if (_storageTempData.length > 50) _storageTempData.removeAt(0);
   }
 
   @override
@@ -34,7 +83,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('IoT Temperature Dashboard'),
+        title: const Text('IoT Monitoring Dashboard'),
         backgroundColor: Colors.teal.shade700,
         elevation: 4,
         centerTitle: true,
@@ -46,42 +95,39 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Real-Time Temperature Monitoring',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'IoT-powered sensor data visualization',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              flex: 2,
-              child: _buildTemperatureChart(),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Latest Measurements',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              flex: 1,
-              child: _buildMeasurementsList(),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Wykres temperatury
+              _buildSectionTitle('Temperature Monitoring'),
+              _buildTemperatureChart(),
+              const SizedBox(height: 20),
+              
+              // Wykres nasłonecznienia
+              _buildSectionTitle('Sunlight Level'),
+              _buildSunlightChart(),
+              const SizedBox(height: 20),
+              
+              // Wykres temperatury magazynów
+              _buildSectionTitle('Energy Storage Temperature'),
+              _buildStorageTempChart(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.teal,
         ),
       ),
     );
@@ -100,16 +146,17 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
               );
             }
             
+            // Aktualizuj również symulowane dane
+            _addSimulatedData();
+            setState(() {});
 
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _listScrollController.animateTo(
-                _listScrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            });
-
-            return _buildChartContent();
+            return _buildChartContent(
+              data: _measurements,
+              unit: '°C',
+              color: Colors.teal,
+              minRange: 5,
+              maxRange: 5,
+            );
           } catch (e, stack) {
             debugPrint('❌ JSON decode error: $e\n$stack');
             return Center(child: Text('❌ JSON Error: $e'));
@@ -118,48 +165,78 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
           debugPrint('❌ WebSocket error: ${snapshot.error}');
           return Center(child: Text('❌ WebSocket Error: ${snapshot.error}'));
         }
-        return const Center(child: CircularProgressIndicator());
+        return _buildChartContent(
+          data: _measurements,
+          unit: '°C',
+          color: Colors.teal,
+          minRange: 5,
+          maxRange: 5,
+        );
       },
     );
   }
 
-  Widget _buildChartContent() {
-    final minY = _measurements.isNotEmpty
-        ? (_measurements.map((m) => double.parse(m['value'].toString()))
+  Widget _buildSunlightChart() {
+    return _buildChartContent(
+      data: _sunlightData,
+      unit: '%',
+      color: Colors.amber,
+      minRange: 10,
+      maxRange: 10,
+      minFixed: 0,
+      maxFixed: 100,
+    );
+  }
+
+  Widget _buildStorageTempChart() {
+    return _buildChartContent(
+      data: _storageTempData,
+      unit: '°C',
+      color: Colors.deepPurple,
+      minRange: 5,
+      maxRange: 5,
+    );
+  }
+
+  Widget _buildChartContent({
+    required List<Map<String, dynamic>> data,
+    required String unit,
+    required Color color,
+    double minRange = 0,
+    double maxRange = 0,
+    double? minFixed,
+    double? maxFixed,
+  }) {
+    final minY = minFixed ?? (data.isNotEmpty
+        ? (data.map((m) => double.parse(m['value'].toString()))
                 .reduce((a, b) => a < b ? a : b) -
-            5)
-        : 0;
-    final maxY = _measurements.isNotEmpty
-        ? (_measurements.map((m) => double.parse(m['value'].toString()))
+            minRange)
+        : 0);
+    
+    final maxY = maxFixed ?? (data.isNotEmpty
+        ? (data.map((m) => double.parse(m['value'].toString()))
                 .reduce((a, b) => a > b ? a : b) +
-            5)
-        : 100;
+            maxRange)
+        : 100);
 
     return Card(
-      elevation: 8,
+      elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
-      shadowColor: Colors.teal.withOpacity(0.3),
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Expanded(
+            SizedBox(
+              height: 200,
               child: LineChart(
                 LineChartData(
                   gridData: FlGridData(
                     show: true,
-                    drawVerticalLine: true,
-                    horizontalInterval: 5,
-                    verticalInterval: 1,
+                    drawVerticalLine: false,
+                    horizontalInterval: (maxY - minY) / 5,
                     getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.grey.withOpacity(0.2),
-                        strokeWidth: 1,
-                      );
-                    },
-                    getDrawingVerticalLine: (value) {
                       return FlLine(
                         color: Colors.grey.withOpacity(0.2),
                         strokeWidth: 1,
@@ -171,14 +248,14 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
-                        interval: 5,
+                        interval: (maxY - minY) / 5,
                         getTitlesWidget: (value, meta) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: Text(
-                              '${value.toStringAsFixed(1)}°C',
+                              '${value.toStringAsFixed(1)}$unit',
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                                 color: Colors.black87,
                               ),
                             ),
@@ -189,60 +266,58 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 22,
-                        interval: _measurements.length > 10
-                            ? (_measurements.length / 5).round().toDouble()
+                        reservedSize: 20,
+                        interval: data.length > 10
+                            ? (data.length / 5).round().toDouble()
                             : 1.0,
                         getTitlesWidget: (value, meta) {
-                          if (value.toInt() >= 0 &&
-                              value.toInt() < _measurements.length) {
-                            final time = _measurements[value.toInt()]['saved_at']
+                          if (value.toInt() >= 0 && value.toInt() < data.length) {
+                            final time = data[value.toInt()]['saved_at']
                                 .toString()
                                 .substring(11, 16);
                             return Text(
                               time,
                               style: const TextStyle(
-                                  fontSize: 10, color: Colors.black87),
+                                fontSize: 10,
+                                color: Colors.black87,
+                              ),
                             );
                           }
                           return const Text('');
                         },
                       ),
                     ),
-                    topTitles:
-                        const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles:
-                        const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
                   borderData: FlBorderData(
                     show: true,
                     border: Border.all(
-                        color: Colors.grey.withOpacity(0.3), width: 1),
+                      color: Colors.grey.withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: _measurements.asMap().entries.map((entry) {
+                      spots: data.asMap().entries.map((entry) {
                         final index = entry.key;
                         final measurement = entry.value;
                         return FlSpot(
-                            index.toDouble(),
-                            double.parse(
-                                measurement['value'].toString()));
+                          index.toDouble(),
+                          double.parse(measurement['value'].toString()),
+                        );
                       }).toList(),
                       isCurved: true,
-                      color: Colors.teal.shade700,
-                      barWidth: 3,
+                      color: color,
+                      barWidth: 2,
                       dotData: FlDotData(
                         show: true,
                         getDotPainter: (spot, percent, barData, index) {
-                          final isLastPoint =
-                              index == _measurements.length - 1;
+                          final isLastPoint = index == data.length - 1;
                           return FlDotCirclePainter(
-                            radius: isLastPoint ? 5 : 3,
-                            color: isLastPoint
-                                ? Colors.orange.shade700
-                                : Colors.teal.shade900,
-                            strokeWidth: isLastPoint ? 3 : 2,
+                            radius: isLastPoint ? 4 : 2,
+                            color: isLastPoint ? color.withOpacity(0.9) : color.withOpacity(0.6),
+                            strokeWidth: isLastPoint ? 2 : 1,
                             strokeColor: Colors.white,
                           );
                         },
@@ -251,16 +326,16 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            Colors.teal.withOpacity(0.3),
-                            Colors.teal.withOpacity(0.0),
+                            color.withOpacity(0.3),
+                            color.withOpacity(0.0),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
                       ),
                       shadow: Shadow(
-                        color: Colors.teal.withOpacity(0.5),
-                        blurRadius: 8,
+                        color: color.withOpacity(0.2),
+                        blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
                     ),
@@ -268,27 +343,28 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                   lineTouchData: LineTouchData(
                     enabled: true,
                     touchTooltipData: LineTouchTooltipData(
-                      getTooltipColor: (_) => Colors.teal.shade800,
+                      getTooltipColor: (_) => color.withOpacity(0.8),
                       tooltipPadding: const EdgeInsets.all(8),
                       tooltipMargin: 8,
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
-                          final measurement = _measurements[spot.x.toInt()];
+                          final measurement = data[spot.x.toInt()];
                           return LineTooltipItem(
-                            '${measurement['sensor']}\nTemp: ${spot.y.toStringAsFixed(1)}°C\nTime: ${measurement['saved_at'].toString().substring(11, 16)}',
+                            'Value: ${spot.y.toStringAsFixed(1)}$unit\nTime: ${measurement['saved_at'].toString().substring(11, 16)}',
                             const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500),
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                           );
                         }).toList();
                       },
                     ),
                   ),
-                  minY: minY.toDouble(),
-                  maxY: maxY.toDouble(),
+                  minY: minY,
+                  maxY: maxY,
                   minX: 0,
-                  maxX: _measurements.length > 1 ? _measurements.length - 1 : 1,
+                  maxX: data.length > 1 ? data.length - 1 : 1,
                 ),
               ),
             ),
@@ -296,97 +372,13 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.circle,
-                    size: 12, color: Colors.orange.shade700),
+                Icon(Icons.circle, size: 12, color: color.withOpacity(0.9)),
                 const SizedBox(width: 4),
-                const Text('Latest reading',
-                    style: TextStyle(fontSize: 12)),
+                const Text('Latest reading', style: TextStyle(fontSize: 12)),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMeasurementsList() {
-    return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      shadowColor: Colors.teal.withOpacity(0.3),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: _measurements.isEmpty
-            ? const Center(
-                child: Text('No measurements available'),
-              )
-            : ListView.builder(
-                controller: _listScrollController,
-                padding: const EdgeInsets.all(8),
-                itemCount: _measurements.length,
-                reverse: true,
-                itemBuilder: (context, index) {
-                  final reversedIndex = _measurements.length - 1 - index;
-                  final measurement = _measurements[reversedIndex];
-                  final isLatest = reversedIndex == _measurements.length - 1;
-                  final temp = double.parse(measurement['value'].toString());
-                  final time = measurement['saved_at'].toString().substring(11, 16);
-
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: isLatest
-                          ? Colors.orange.withOpacity(0.1)
-                          : Colors.transparent,
-                      border: isLatest
-                          ? Border.all(color: Colors.orange.withOpacity(0.3))
-                          : null,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.thermostat,
-                        color: isLatest
-                            ? Colors.orange.shade700
-                            : Colors.teal.shade700,
-                      ),
-                      title: Text(
-                        '${temp.toStringAsFixed(1)}°C',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isLatest
-                              ? Colors.orange.shade800
-                              : Colors.teal.shade800,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'Sensor: ${measurement['sensor']}',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            time,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            measurement['saved_at']
-                                .toString()
-                                .substring(0, 10),
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey.shade600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
       ),
     );
   }

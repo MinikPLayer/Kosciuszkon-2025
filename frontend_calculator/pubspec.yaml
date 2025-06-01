@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   web_socket_channel: ^3.0.3
+  intl: ^0.18.1
   google_fonts: ^6.2.1
   flutter_animate: ^4.5.2
 
