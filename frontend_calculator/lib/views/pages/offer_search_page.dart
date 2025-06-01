@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:frontend_calculator/data/models/offer_model.dart';
 import 'package:frontend_calculator/utils.dart';
-import 'package:frontend_calculator/views/pages/offer_results_page.dart';
 import 'package:frontend_calculator/views/widgets/offer_entry_widget.dart';
 
 class OfferSearchPage extends StatefulWidget {
@@ -113,7 +112,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
     });
 
     // Simulate network delay
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         isLoading = false;
         results = newResults;

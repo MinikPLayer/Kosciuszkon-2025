@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/calculator_page.dart';
+import 'package:frontend_calculator/views/pages/dictionary_page.dart';
 import 'package:frontend_calculator/views/pages/login_page.dart';
+import 'package:frontend_calculator/views/pages/offer_search_page.dart';
 import 'package:frontend_calculator/views/pages/registration_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -77,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 40),
                 _buildAuthButtons(context),
                 const SizedBox(height: 40),
-                _buildFeaturePreview(),
+                _buildFeaturePreview(context),
               ],
             ),
           ),
@@ -130,7 +133,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturePreview() {
+  Widget _buildFeaturePreview(BuildContext context) {
     return Column(
       children: [
         Text(
@@ -142,27 +145,50 @@ class HomeScreen extends StatelessWidget {
           spacing: 16,
           runSpacing: 16,
           children: [
-            _buildFeatureCard(Icons.calculate, 'Kalkulator PV'),
-            _buildFeatureCard(Icons.analytics, 'Analizy'),
-            _buildFeatureCard(Icons.book, 'Słownik'),
+            _buildFeatureCard(
+              Icons.calculate,
+              'Kalkulator',
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CalculatorPage()));
+              },
+            ),
+            _buildFeatureCard(
+              Icons.shopping_bag,
+              'Oferta',
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => OfferSearchPage()));
+              },
+            ),
+            _buildFeatureCard(
+              Icons.book,
+              'Słownik',
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => DictionaryPage()));
+              },
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildFeatureCard(IconData icon, String title) {
+  Widget _buildFeatureCard(IconData icon, String title, {Function()? onTap}) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Icon(icon, size: 40, color: Colors.green),
-            const SizedBox(height: 8),
-            Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
-          ],
+      child: SizedBox(
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Icon(icon, size: 40, color: Colors.green),
+                const SizedBox(height: 8),
+                Text(title, style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+              ],
+            ),
+          ),
         ),
       ),
     );
