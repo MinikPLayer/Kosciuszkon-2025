@@ -9,15 +9,6 @@ class OfferResultsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Wyniki wyszukiwania ofert')),
-      body: ListView.builder(
-        itemCount: offers.length,
-        itemBuilder: (context, index) {
-          final offer = offers[index];
-          return OfferEntryWidget(offer: offer);
-        },
-      ),
-    );
+    return Scaffold(appBar: AppBar(title: Text('Wyniki wyszukiwania ofert')), body: const Text("SEARCH"));
   }
 }

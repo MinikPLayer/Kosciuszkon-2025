@@ -1,13 +1,13 @@
 class OfferModel {
-  final String id;
-  final String title;
-  final String? description;
-  final String companyName;
-  final double fitScore;
-  final double pricePerKw;
-  final double areaPerKw;
-  final double temperatureLossCoefficient;
-  final String imageUrl;
+  String id;
+  String title;
+  String? description;
+  String companyName;
+  double fitScore;
+  double pricePerKw;
+  double areaPerKw;
+  double temperatureLossCoefficient;
+  String imageUrl;
 
   OfferModel({
     required this.id,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/utils.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -137,12 +138,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
           children: [
             const Text('Parametry instalacji', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            _buildNumberInput(
+            Utils.buildNumberInput(
               label: 'Roczne zużycie energii (kWh)',
               value: singleYearEnergyConsumption,
               onChanged: (v) => singleYearEnergyConsumption = v,
             ),
-            _buildNumberInput(
+            Utils.buildNumberInput(
               label: 'Liczba lat obliczeń',
               value: calculationYears.toDouble(),
               isInt: true,
@@ -152,12 +153,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
               title: const Text('Panele fotowoltaiczne'),
               childrenPadding: EdgeInsets.all(8.0),
               children: [
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Całkowita moc instalacji (kW)',
                   value: fvSystemSizeKw,
                   onChanged: (v) => fvSystemSizeKw = v,
                 ),
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Koszt instalacji 1kW paneli (PLN/kW)',
                   value: fvSystemInstallationCostPerKw,
                   onChanged: (v) => fvSystemInstallationCostPerKw = v,
@@ -168,12 +169,12 @@ class _CalculatorPageState extends State<CalculatorPage> {
               title: const Text('Magazyn energii'),
               childrenPadding: EdgeInsets.all(8.0),
               children: [
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Całkowita pojemność magazynu (kWh)',
                   value: energyStorageCapacity,
                   onChanged: (v) => energyStorageCapacity = v,
                 ),
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Koszt instalacji magazynu (PLN/kWh)',
                   value: energyStorageInstallationCostPerKw,
                   onChanged: (v) => energyStorageInstallationCostPerKw = v,
@@ -185,17 +186,17 @@ class _CalculatorPageState extends State<CalculatorPage> {
               childrenPadding: EdgeInsets.all(8.0),
 
               children: [
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Cena zakupu energii w pierwszym roku (PLN/kWh)',
                   value: firstYearEnergyBuyingPrice,
                   onChanged: (v) => firstYearEnergyBuyingPrice = v,
                 ),
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Wartość sprzedaży nadmiaru energii (PLN/kWh)',
                   value: firstYearEnergySellingPrice,
                   onChanged: (v) => firstYearEnergySellingPrice = v,
                 ),
-                _buildNumberInput(
+                Utils.buildNumberInput(
                   label: 'Roczny wzrost cen energii (%)',
                   value: yearlyEnergyPriceIncreasePercentage,
                   onChanged: (v) => yearlyEnergyPriceIncreasePercentage = v,
@@ -212,35 +213,6 @@ class _CalculatorPageState extends State<CalculatorPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildNumberInput({
-    required String label,
-    required double value,
-    required void Function(double) onChanged,
-    bool isInt = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: TextFormField(
-        initialValue: isInt ? value.toInt().toString() : value.toString(),
-        decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
-        keyboardType: TextInputType.number,
-        validator: (value) {
-          if (value == null || value.isEmpty) return 'Wprowadź wartość';
-          final numValue = isInt ? int.tryParse(value) : double.tryParse(value);
-          if (numValue == null) return 'Nieprawidłowa wartość';
-          if (numValue <= 0) return 'Wartość musi być dodatnia';
-          return null;
-        },
-        onChanged: (value) {
-          final numValue = isInt ? int.tryParse(value) : double.tryParse(value);
-          if (numValue != null && numValue > 0) {
-            onChanged(numValue.toDouble());
-          }
-        },
       ),
     );
   }

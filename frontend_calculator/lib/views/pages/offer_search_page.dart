@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:frontend_calculator/data/models/offer_model.dart';
+import 'package:frontend_calculator/utils.dart';
 import 'package:frontend_calculator/views/pages/offer_results_page.dart';
+import 'package:frontend_calculator/views/widgets/offer_entry_widget.dart';
 
 class OfferSearchPage extends StatefulWidget {
   const OfferSearchPage({super.key});
@@ -10,9 +14,17 @@ class OfferSearchPage extends StatefulWidget {
 }
 
 class _OfferSearchPageState extends State<OfferSearchPage> {
+  double roofArea = 200.0;
+  double budget = 30000.0;
+  double yearlyConsumption = 1713.0;
+
+  bool isLoading = false;
+
+  List<OfferModel> results = [];
+
   void applySearch() {
     // TODO: Get results from API.
-    var results = [
+    var newResults = [
       OfferModel(
         id: "0",
         title: "Panele fotowoltaiczne",
@@ -81,16 +93,96 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
       ),
     ];
 
-    results.sort((a, b) => b.fitScore.compareTo(a.fitScore));
+    for (var offer in newResults) {
+      var areaLimit = roofArea / offer.areaPerKw;
+      var priceLimit = budget / offer.pricePerKw;
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => OfferResultsPage(offers: results)));
+      var limit = min(areaLimit, priceLimit);
+      offer.fitScore = limit;
+    }
+
+    var maxFitScore = newResults.map((e) => e.fitScore).reduce((a, b) => max(a, b));
+    for (var offer in newResults) {
+      offer.fitScore = (offer.fitScore / maxFitScore) * 10; // Normalize to 0-10 scale
+    }
+
+    newResults.sort((a, b) => b.fitScore.compareTo(a.fitScore));
+
+    setState(() {
+      isLoading = true;
+    });
+
+    // Simulate network delay
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        isLoading = false;
+        results = newResults;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Oferta')),
-      body: Center(child: ElevatedButton(onPressed: applySearch, child: const Text('Test search'))),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 32.0),
+                    child: const Text(
+                      'Wyszukiwarka ofert paneli',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Utils.buildNumberInput(
+                    label: "Powierzchnia dachu (m2)",
+                    value: roofArea,
+                    onChanged: (value) => roofArea = value,
+                  ),
+                  Utils.buildNumberInput(label: "Budżet (zł)", value: budget, onChanged: (value) => budget = value),
+                  Utils.buildNumberInput(
+                    label: "Roczne zużycie energii (kWh)",
+                    value: yearlyConsumption,
+                    onChanged: (value) => yearlyConsumption = value,
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: applySearch,
+                      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+                      child: Text('Szukaj', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (results.isNotEmpty || isLoading)
+            Expanded(
+              child: Card(
+                child:
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                          itemCount: results.length,
+                          itemBuilder: (context, index) {
+                            final offer = results[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: OfferEntryWidget(offer: offer, isPremium: index < 2),
+                            );
+                          },
+                        ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
