@@ -19,6 +19,8 @@ class MeasurementConsumer(AsyncWebsocketConsumer):
         pass
 
     async def send_new_measurement(self, event):
+        print("dddddddddddddddddddd")
+        print(event["measurements"])
         await self.send(text_data=json.dumps({
             "measurements": event["measurements"]
         }, default=str))

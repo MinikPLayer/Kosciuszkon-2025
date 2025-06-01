@@ -80,7 +80,7 @@ class HomePage extends StatelessWidget {
               icon: Icons.book,
               title: 'Słownik',
               color: Colors.purple.shade100,
-              page: const DictionaryPage(),
+              page: DictionaryPage(),
             ),
             _buildActionCard(
               context,

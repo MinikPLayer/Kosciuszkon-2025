@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/notifiers.dart';
 import 'widgets/navbar_widget.dart';
 
-List<Widget> pages = [const HomePage(), const CalculatorPage(), const DictionaryPage(), const OfferSearchPage()];
+List<Widget> pages = [const HomePage(), const CalculatorPage(), DictionaryPage(), const OfferSearchPage()];
 
 class WidgetTree extends StatelessWidget {
   const WidgetTree({super.key});
