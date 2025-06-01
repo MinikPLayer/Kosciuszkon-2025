@@ -148,8 +148,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
             
             // Aktualizuj również symulowane dane
             _addSimulatedData();
-            setState(() {});
-
+            
             return _buildChartContent(
               data: _measurements,
               unit: '°C',
