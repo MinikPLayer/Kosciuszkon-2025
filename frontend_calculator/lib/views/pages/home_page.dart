@@ -96,7 +96,7 @@ class HomePage extends StatelessWidget {
             ),
             _buildActionCard(
               icon: Icons.home,
-              title: 'Smart Home',
+              title: 'Eco Home',
               color: Colors.green.shade200,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LocationPage())),
             ),

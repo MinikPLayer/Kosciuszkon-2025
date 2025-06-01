@@ -156,7 +156,7 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Smart Home - Lokacje'),
+        title: Text('Eco Home - Lokacje'),
         leading: buildBackButton(),
         actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
       ),
