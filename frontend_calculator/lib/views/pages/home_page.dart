@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/alarm_page.dart';
 import 'package:frontend_calculator/views/pages/location_page.dart';
 import 'package:frontend_calculator/views/pages/offer_search_page.dart';
+import 'package:frontend_calculator/views/pages/rules_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/views/pages/calculator_page.dart';
 import 'package:frontend_calculator/views/pages/dictionary_page.dart';
@@ -101,6 +103,20 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => MeasurementsPage()),
                 );
               },
+            ),
+            _buildActionCard(
+              context,
+              icon: Icons.list,
+              title: 'Zasady',
+              color: Colors.purple.shade400,
+              page: RulesPage(),
+            ),
+            _buildActionCard(
+              context,
+              icon: Icons.alarm,
+              title: 'Alarmy',
+              color: Colors.yellow.shade600,
+              page: AlarmPage(),
             ),
             _buildActionCard(
               context,
