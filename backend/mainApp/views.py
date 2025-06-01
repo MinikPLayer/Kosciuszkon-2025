@@ -1,3 +1,5 @@
+import csv
+
 import ollama
 from django.contrib.auth import authenticate, get_user_model
 from django.shortcuts import render
@@ -5,7 +7,6 @@ from rest_framework import status, permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import JSONParser
 from mainApp.Kalkulator_Python.advanced_calc import AdvancedCalc, AdvancedCalcData, load_data_from_files
 from mainApp.models import AppUser
@@ -156,10 +157,20 @@ class ChatAPI(APIView):
 
         return Response({"answer": response['response']}, status=status.HTTP_200_OK)
 
+class DeviceAPI(APIView):
+
+    def get(self, request):
+
+        return Response(status=status.HTTP_200_OK)
+
+    def post(self, request):
+
+        return Response(status=status.HTTP_200_OK)
+
 
 class AdvanceCalculator(APIView):
     parser_classes = [JSONParser, MultiPartParser]
-    
+
     def post(self, request):
         try:
             # Handle CSV file uploads if present
