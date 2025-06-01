@@ -22,11 +22,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
   void _addBotMessage(String text) {
     setState(() {
-      _messages.add({
-        'text': text,
-        'isUser': false,
-        'time': DateTime.now(),
-      });
+      _messages.add({'text': text, 'isUser': false, 'time': DateTime.now()});
     });
   }
 
@@ -35,11 +31,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
     final userMessage = _textController.text;
     setState(() {
-      _messages.add({
-        'text': userMessage,
-        'isUser': true,
-        'time': DateTime.now(),
-      });
+      _messages.add({'text': userMessage, 'isUser': true, 'time': DateTime.now()});
       _isLoading = true;
     });
 
@@ -47,7 +39,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
     try {
       final response = await ApiService.sendChatMessage(userMessage);
-      
+
       setState(() {
         _addBotMessage(response['answer'] ?? 'Przepraszam, nie rozumiem pytania.');
       });
@@ -65,15 +57,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Asystent PV',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: Text('Asystent PV')),
       body: Column(
         children: [
           Expanded(
@@ -83,19 +67,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
-                return _ChatBubble(
-                  text: message['text'],
-                  isUser: message['isUser'],
-                  time: message['time'],
-                );
+                return _ChatBubble(text: message['text'], isUser: message['isUser'], time: message['time']);
               },
             ),
           ),
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(),
-            ),
+          if (_isLoading) const Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()),
           _buildInputField(),
         ],
       ),
@@ -112,9 +88,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
               controller: _textController,
               decoration: InputDecoration(
                 hintText: 'Zadaj pytanie...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
               onSubmitted: (_) => _sendMessage(),
@@ -139,11 +113,7 @@ class _ChatBubble extends StatelessWidget {
   final bool isUser;
   final DateTime time;
 
-  const _ChatBubble({
-    required this.text,
-    required this.isUser,
-    required this.time,
-  });
+  const _ChatBubble({required this.text, required this.isUser, required this.time});
 
   @override
   Widget build(BuildContext context) {
@@ -151,25 +121,20 @@ class _ChatBubble extends StatelessWidget {
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
-        ),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isUser ? Colors.green[100] : Colors.grey[200],
+          color: isUser ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(text),
+            Text(text, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onTertiary)),
             const SizedBox(height: 4),
             Text(
               '${time.hour}:${time.minute.toString().padLeft(2, '0')}',
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onTertiary),
             ),
           ],
         ),
