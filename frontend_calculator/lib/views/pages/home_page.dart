@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/alarm_page.dart';
+import 'package:frontend_calculator/views/pages/dictionary_page.dart';
+import 'package:frontend_calculator/views/pages/location_page.dart';
+import 'package:frontend_calculator/views/pages/measurements_page.dart';
+import 'package:frontend_calculator/views/pages/offer_search_page.dart';
+import 'package:frontend_calculator/views/pages/profil_page.dart';
+import 'package:frontend_calculator/views/pages/rules_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/data/notifiers.dart';
 
@@ -14,11 +21,7 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildWelcomeHeader(),
-                const SizedBox(height: 24),
-                _buildQuickActions(context),
-              ],
+              children: [_buildWelcomeHeader(context), const SizedBox(height: 24), _buildQuickActions(context)],
             ),
           ),
         ),
@@ -26,13 +29,27 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeHeader() {
+  Widget _buildWelcomeHeader(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Witaj w Evergy!',
-          style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Witaj w Evergy!',
+              style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => ProfilePage(userData: ProfilePage.getDefaultProfile())));
+              },
+              icon: const Icon(Icons.account_circle, size: 32),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         Text('Ostatnie logowanie: dzisiaj', style: GoogleFonts.poppins(color: Colors.grey[600])),
@@ -63,37 +80,37 @@ class HomePage extends StatelessWidget {
               icon: Icons.book,
               title: 'Słownik',
               color: Colors.purple.shade100,
-              onTap: () => selectedPageNotifier.value = 2,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DictionaryPage())),
             ),
             _buildActionCard(
-              icon: Icons.analytics,
-              title: 'Analizy',
+              icon: Icons.devices,
+              title: 'Urządzenia pomiarowe',
               color: Colors.red.shade300,
-              onTap: () => selectedPageNotifier.value = 3,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const MeasurementsPage())),
             ),
             _buildActionCard(
               icon: Icons.shopping_bag,
               title: 'Oferta',
               color: Colors.orange,
-              onTap: () => selectedPageNotifier.value = 4,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const OfferSearchPage())),
             ),
             _buildActionCard(
               icon: Icons.home,
-              title: 'SmartHome',
+              title: 'Eco Home',
               color: Colors.green.shade200,
-              onTap: () => selectedPageNotifier.value = 5,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LocationPage())),
             ),
             _buildActionCard(
               icon: Icons.list,
               title: 'Zasady',
               color: Colors.purple.shade400,
-              onTap: () => selectedPageNotifier.value = 6,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const RulesPage())),
             ),
             _buildActionCard(
               icon: Icons.alarm,
               title: 'Alarmy',
               color: Colors.yellow.shade600,
-              onTap: () => selectedPageNotifier.value = 7,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AlarmPage())),
             ),
             // _buildActionCard(
             //   icon: Icons.history,
@@ -135,9 +152,9 @@ class HomePage extends StatelessWidget {
   }
 
   void _showNotImplemented(BuildContext context, String label) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label - funkcjonalność w trakcie implementacji')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$label - funkcjonalność w trakcie implementacji')));
   }
 }
 

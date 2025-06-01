@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
@@ -80,6 +81,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
         elevation: 4,
         centerTitle: true,
         titleTextStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+        leading: buildBackButton(),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

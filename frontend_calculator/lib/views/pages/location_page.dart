@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 
 class LocationPage extends StatelessWidget {
   const LocationPage({super.key});
@@ -155,8 +156,8 @@ class _LocationSelectionPageState extends State<LocationSelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Twoje lokacje'),
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+        title: Text('Eco Home - Lokacje'),
+        leading: buildBackButton(),
         actions: [IconButton(icon: Icon(Icons.add), onPressed: () {})],
       ),
       body: ListView.builder(

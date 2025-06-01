@@ -13,16 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/notifiers.dart';
 import 'widgets/navbar_widget.dart';
 
-List<Widget> pages = [
-  const HomePage(),
-  const CalculatorPage(),
-  DictionaryPage(),
-  const MeasurementsPage(),
-  const OfferSearchPage(),
-  const LocationPage(),
-  const RulesPage(),
-  AlarmPage()
-];
+List<Widget> pages = [const HomePage(), const CalculatorPage(), ProfilePage(userData: ProfilePage.getDefaultProfile())];
 
 class WidgetTree extends StatelessWidget {
   const WidgetTree({super.key});
@@ -31,58 +22,58 @@ class WidgetTree extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-      appBar: AppBar(
-        leading: ValueListenableBuilder<int>(
-          valueListenable: selectedPageNotifier,
-          builder: (context, selectedPage, child) {
-            return selectedPage != 0
-                ? IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () {
-                      selectedPageNotifier.value = 0; // wróć do HomePage
-                    },
-                    tooltip: 'Powrót',
-                  )
-                : SizedBox.shrink(); // brak przycisku, jeśli jesteś na HomePage
-          },
-        ),
-        title: Text(
-          'Evergy',
-          style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.lightGreenAccent),
-        ),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF4CAF50), Color(0xFF8BC34A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        elevation: 6,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.person, color: Colors.black, size: 28),
-            onPressed: () async {
-              final userData = {
-                'email': 'example@email.com',
-                'userType': 'Osoba prywatna',
-                'voivodeship': 'Mazowieckie',
-                'buildingType': 'Dom jednorodzinny',
-                'orientation': 'Południe',
-                'roofType': 'Dachówka ceramiczna',
-                'roofAngle': 30.0,
-                'storageCapacity': '10',
-                'storageYears': '2',
-              };
+        // appBar: AppBar(
+        //   leading: ValueListenableBuilder<int>(
+        //     valueListenable: selectedPageNotifier,
+        //     builder: (context, selectedPage, child) {
+        //       return selectedPage != 0
+        //           ? IconButton(
+        //             icon: Icon(Icons.arrow_back, color: Colors.black),
+        //             onPressed: () {
+        //               selectedPageNotifier.value = 0; // wróć do HomePage
+        //             },
+        //             tooltip: 'Powrót',
+        //           )
+        //           : SizedBox.shrink(); // brak przycisku, jeśli jesteś na HomePage
+        //     },
+        //   ),
+        //   title: Text(
+        //     'Evergy',
+        //     style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.lightGreenAccent),
+        //   ),
+        //   centerTitle: true,
+        //   flexibleSpace: Container(
+        //     decoration: BoxDecoration(
+        //       gradient: LinearGradient(
+        //         colors: [Color(0xFF4CAF50), Color(0xFF8BC34A)],
+        //         begin: Alignment.topLeft,
+        //         end: Alignment.bottomRight,
+        //       ),
+        //     ),
+        //   ),
+        //   elevation: 6,
+        //   actions: [
+        //     IconButton(
+        //       icon: Icon(Icons.person, color: Colors.black, size: 28),
+        //       onPressed: () async {
+        //         final userData = {
+        //           'email': 'example@email.com',
+        //           'userType': 'Osoba prywatna',
+        //           'voivodeship': 'Mazowieckie',
+        //           'buildingType': 'Dom jednorodzinny',
+        //           'orientation': 'Południe',
+        //           'roofType': 'Dachówka ceramiczna',
+        //           'roofAngle': 30.0,
+        //           'storageCapacity': '10',
+        //           'storageYears': '2',
+        //         };
 
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userData: userData)));
-            },
-            tooltip: 'Profil',
-          ),
-        ],
-      ),
+        //         Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userData: userData)));
+        //       },
+        //       tooltip: 'Profil',
+        //     ),
+        //   ],
+        // ),
         body: ValueListenableBuilder<int>(
           valueListenable: selectedPageNotifier,
           builder: (context, selectedPage, child) {

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_calculator/data/models/offer_model.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:frontend_calculator/utils.dart';
 import 'package:frontend_calculator/views/widgets/offer_entry_widget.dart';
 
@@ -16,6 +17,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
   double roofArea = 200.0;
   double budget = 30000.0;
   double yearlyConsumption = 1713.0;
+  int years = 40;
 
   bool isLoading = false;
 
@@ -30,7 +32,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
         companyName: "Panex",
         description: "Wysokiej jakości panele słoneczne o dużej wydajności.",
         fitScore: 7.9,
-        pricePerKw: 4239.99,
+        pricePerKw: 3239.99,
         areaPerKw: 15.5,
         temperatureLossCoefficient: 0.8,
         imageUrl: "panel1.jpg",
@@ -41,7 +43,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
         companyName: "EkoEnergia",
         description: "Profesjonalna instalacja systemów fotowoltaicznych.",
         fitScore: 8.5,
-        pricePerKw: 3999.99,
+        pricePerKw: 2999.99,
         areaPerKw: 17.2,
         temperatureLossCoefficient: 0.75,
         imageUrl: "panel2.jpg",
@@ -52,7 +54,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
         companyName: "SolTech",
         description: "Kompletny zestaw paneli słonecznych z akcesoriami.",
         fitScore: 9.2,
-        pricePerKw: 4599.99,
+        pricePerKw: 3599.99,
         areaPerKw: 14.8,
         temperatureLossCoefficient: 0.7,
         imageUrl: "panel3.png",
@@ -63,7 +65,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
         companyName: "GreenPower",
         description: "Innowacyjny system PV z magazynem energii.",
         fitScore: 9.7,
-        pricePerKw: 5999.99,
+        pricePerKw: 4999.99,
         areaPerKw: 12.0,
         temperatureLossCoefficient: 0.78,
         imageUrl: "panel4.png",
@@ -74,7 +76,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
         companyName: "SolarMax",
         description: "Panele słoneczne z profesjonalnym montażem.",
         fitScore: 3.1,
-        pricePerKw: 4499.99,
+        pricePerKw: 3499.99,
         areaPerKw: 21.6,
         temperatureLossCoefficient: 0.4,
         imageUrl: "panel5.png",
@@ -85,7 +87,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
         companyName: "EcoSolar",
         description: "Zestaw instalacji paneli z gwarancją.",
         fitScore: 6.5,
-        pricePerKw: 3899.99,
+        pricePerKw: 2899.99,
         areaPerKw: 18.0,
         temperatureLossCoefficient: 0.82,
         imageUrl: "panel6.png",
@@ -98,6 +100,8 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
 
       var limit = min(areaLimit, priceLimit);
       offer.fitScore = limit;
+      offer.fullSystemOutputKw = limit;
+      offer.userYearlyConsumptionKw = yearlyConsumption;
     }
 
     var maxFitScore = newResults.map((e) => e.fitScore).reduce((a, b) => max(a, b));
@@ -123,7 +127,7 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Oferta')),
+      appBar: AppBar(title: const Text('Oferta'), leading: buildBackButton()),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -151,6 +155,12 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
                     value: yearlyConsumption,
                     onChanged: (value) => yearlyConsumption = value,
                   ),
+                  Utils.buildNumberInput(
+                    isInt: true,
+                    label: "Lata obliczeń",
+                    value: years.toDouble(),
+                    onChanged: (value) => years = value.toInt(),
+                  ),
                   Center(
                     child: ElevatedButton(
                       onPressed: applySearch,
@@ -169,12 +179,13 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
                     isLoading
                         ? Center(child: CircularProgressIndicator())
                         : ListView.builder(
+                          addAutomaticKeepAlives: true,
                           itemCount: results.length,
                           itemBuilder: (context, index) {
                             final offer = results[index];
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: OfferEntryWidget(offer: offer, isPremium: index < 2),
+                              child: OfferEntryWidget(offer: offer, isPremium: index < 2, yearsToCalculate: years),
                             );
                           },
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/data/notifiers.dart';
 import 'package:intl/intl.dart';
 
 class AlarmPage extends StatelessWidget {
@@ -72,10 +73,7 @@ class AlarmPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Alarmy i zdarzenia'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: buildBackButton(),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -87,7 +85,7 @@ class AlarmPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          _buildStatsHeader(),
+          _buildStatsHeader(context),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -95,7 +93,7 @@ class AlarmPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: _buildAlarmCard(alarmEvents[index]),
+                  child: _buildAlarmCard(context, alarmEvents[index]),
                 );
               },
             ),
@@ -105,7 +103,7 @@ class AlarmPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsHeader() {
+  Widget _buildStatsHeader(BuildContext context) {
     final criticalCount = alarmEvents.where((a) => a.severity == AlarmSeverity.critical).length;
     final warningCount = alarmEvents.where((a) => a.severity == AlarmSeverity.warning).length;
     final totalActive = criticalCount + warningCount;
@@ -113,7 +111,7 @@ class AlarmPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
       ),
       margin: const EdgeInsets.all(16),
@@ -121,18 +119,21 @@ class AlarmPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildStatItem(
+            context,
             'Aktywne alarmy',
             '$totalActive',
             totalActive > 0 ? Colors.red : Colors.green,
             Icons.warning,
           ),
           _buildStatItem(
+            context,
             'Krytyczne',
             '$criticalCount',
             criticalCount > 0 ? Colors.red : Colors.grey,
             Icons.error,
           ),
           _buildStatItem(
+            context,
             'Ostrzeżenia',
             '$warningCount',
             warningCount > 0 ? Colors.orange : Colors.grey,
@@ -143,31 +144,18 @@ class AlarmPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String title, String value, Color color, IconData icon) {
+  Widget _buildStatItem(BuildContext context, String title, String value, Color color, IconData icon) {
     return Column(
       children: [
         Icon(icon, color: color, size: 28),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+        Text(title, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
       ],
     );
   }
 
-  Widget _buildAlarmCard(AlarmEvent alarm) {
+  Widget _buildAlarmCard(BuildContext context, AlarmEvent alarm) {
     final Color bgColor;
     final Color textColor;
     final IconData icon;
@@ -194,16 +182,14 @@ class AlarmPage extends StatelessWidget {
         icon = Icons.info;
         break;
       default:
-        bgColor = Colors.grey[50]!;
-        textColor = Colors.grey[900]!;
+        bgColor = Theme.of(context).colorScheme.surface;
+        textColor = Theme.of(context).colorScheme.onSurface;
         icon = Icons.notifications;
     }
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -216,27 +202,19 @@ class AlarmPage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     alarm.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: textColor,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
                   ),
                 ),
                 Text(
                   DateFormat('HH:mm').format(alarm.timestamp),
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(alarm.description),
             const SizedBox(height: 8),
-            if (alarm.severity.index <= AlarmSeverity.high.index)
-              _buildAlarmDetails(alarm, textColor),
+            if (alarm.severity.index <= AlarmSeverity.high.index) _buildAlarmDetails(context, alarm, textColor),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -244,10 +222,7 @@ class AlarmPage extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   '${alarm.location} • ${alarm.deviceName}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -257,11 +232,24 @@ class AlarmPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAlarmDetails(AlarmEvent alarm, Color textColor) {
+  Widget _buildAlarmDetails(BuildContext context, AlarmEvent alarm, Color textColor) {
+    var color = Theme.of(context).colorScheme.surfaceContainerHigh;
+    switch (alarm.severity) {
+      case AlarmSeverity.critical:
+        color = Theme.of(context).colorScheme.errorContainer.withOpacity(0.5);
+        textColor = Theme.of(context).colorScheme.onErrorContainer;
+        break;
+      case AlarmSeverity.high:
+        color = Theme.of(context).colorScheme.errorContainer.withOpacity(0.1);
+        break;
+      default:
+        color = Theme.of(context).colorScheme.surfaceContainerHigh;
+    }
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: textColor.withOpacity(0.3)),
       ),
@@ -271,30 +259,15 @@ class AlarmPage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Aktualna wartość:',
-                style: TextStyle(fontSize: 12),
-              ),
-              Text(
-                alarm.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
+              Text('Aktualna wartość:', style: TextStyle(fontSize: 12)),
+              Text(alarm.value, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
             ],
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Próg alarmowy:',
-                style: TextStyle(fontSize: 12),
-              ),
-              Text(
-                alarm.threshold,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+              Text('Próg alarmowy:', style: TextStyle(fontSize: 12)),
+              Text(alarm.threshold, style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           if (alarm.type == AlarmType.powerConsumption)
@@ -331,14 +304,8 @@ class AlarmPage extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Anuluj'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Zastosuj'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Anuluj')),
+            ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Zastosuj')),
           ],
         );
       },
@@ -354,9 +321,7 @@ class AlarmPage extends StatelessWidget {
         onSelected: (bool selected) {},
         selectedColor: _getSeverityColor(severity).withOpacity(0.2),
         checkmarkColor: _getSeverityColor(severity),
-        labelStyle: TextStyle(
-          color: _getSeverityColor(severity),
-        ),
+        labelStyle: TextStyle(color: _getSeverityColor(severity)),
       ),
     );
   }
@@ -377,21 +342,9 @@ class AlarmPage extends StatelessWidget {
   }
 }
 
-enum AlarmSeverity {
-  critical,
-  high,
-  warning,
-  medium,
-  info,
-}
+enum AlarmSeverity { critical, high, warning, medium, info }
 
-enum AlarmType {
-  powerConsumption,
-  temperature,
-  deviceInactive,
-  battery,
-  system,
-}
+enum AlarmType { powerConsumption, temperature, deviceInactive, battery, system }
 
 class AlarmEvent {
   final String id;
