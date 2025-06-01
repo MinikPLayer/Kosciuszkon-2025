@@ -85,13 +85,16 @@ class AlarmPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          _buildStatsHeader(),
+          _buildStatsHeader(context),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: alarmEvents.length,
               itemBuilder: (context, index) {
-                return Padding(padding: const EdgeInsets.only(bottom: 16), child: _buildAlarmCard(alarmEvents[index]));
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildAlarmCard(context, alarmEvents[index]),
+                );
               },
             ),
           ),
@@ -100,21 +103,37 @@ class AlarmPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsHeader() {
+  Widget _buildStatsHeader(BuildContext context) {
     final criticalCount = alarmEvents.where((a) => a.severity == AlarmSeverity.critical).length;
     final warningCount = alarmEvents.where((a) => a.severity == AlarmSeverity.warning).length;
     final totalActive = criticalCount + warningCount;
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
       margin: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem('Aktywne alarmy', '$totalActive', totalActive > 0 ? Colors.red : Colors.green, Icons.warning),
-          _buildStatItem('Krytyczne', '$criticalCount', criticalCount > 0 ? Colors.red : Colors.grey, Icons.error),
           _buildStatItem(
+            context,
+            'Aktywne alarmy',
+            '$totalActive',
+            totalActive > 0 ? Colors.red : Colors.green,
+            Icons.warning,
+          ),
+          _buildStatItem(
+            context,
+            'Krytyczne',
+            '$criticalCount',
+            criticalCount > 0 ? Colors.red : Colors.grey,
+            Icons.error,
+          ),
+          _buildStatItem(
+            context,
             'Ostrzeżenia',
             '$warningCount',
             warningCount > 0 ? Colors.orange : Colors.grey,
@@ -125,18 +144,18 @@ class AlarmPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String title, String value, Color color, IconData icon) {
+  Widget _buildStatItem(BuildContext context, String title, String value, Color color, IconData icon) {
     return Column(
       children: [
         Icon(icon, color: color, size: 28),
         const SizedBox(height: 4),
         Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-        Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+        Text(title, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
       ],
     );
   }
 
-  Widget _buildAlarmCard(AlarmEvent alarm) {
+  Widget _buildAlarmCard(BuildContext context, AlarmEvent alarm) {
     final Color bgColor;
     final Color textColor;
     final IconData icon;
@@ -163,8 +182,8 @@ class AlarmPage extends StatelessWidget {
         icon = Icons.info;
         break;
       default:
-        bgColor = Colors.grey[50]!;
-        textColor = Colors.grey[900]!;
+        bgColor = Theme.of(context).colorScheme.surface;
+        textColor = Theme.of(context).colorScheme.onSurface;
         icon = Icons.notifications;
     }
 
@@ -195,7 +214,7 @@ class AlarmPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(alarm.description),
             const SizedBox(height: 8),
-            if (alarm.severity.index <= AlarmSeverity.high.index) _buildAlarmDetails(alarm, textColor),
+            if (alarm.severity.index <= AlarmSeverity.high.index) _buildAlarmDetails(context, alarm, textColor),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -213,11 +232,11 @@ class AlarmPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAlarmDetails(AlarmEvent alarm, Color textColor) {
+  Widget _buildAlarmDetails(BuildContext context, AlarmEvent alarm, Color textColor) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: textColor.withOpacity(0.3)),
       ),
