@@ -94,21 +94,9 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
         if (snapshot.hasData) {
           try {
             final decoded = json.decode(snapshot.data as String);
-            if (decoded is Map && decoded.containsKey('measurements')) {
-              _measurements.clear();
-              _measurements.addAll(
-                List<Map<String, dynamic>>.from(decoded['measurements']),
-              );
-            } else if (decoded is Map &&
-                decoded.containsKey('sensor') &&
-                decoded.containsKey('value') &&
-                decoded.containsKey('saved_at')) {
-              _measurements.add(Map<String, dynamic>.from(decoded));
-              if (_measurements.length > 50) {
-                _measurements.removeAt(0);
-              }
-            }
-
+           
+            _measurements.clear();
+            _measurements.add(Map<String, dynamic>.from(decoded['measurements']));
             WidgetsBinding.instance.addPostFrameCallback((_) {
               _listScrollController.animateTo(
                 _listScrollController.position.maxScrollExtent,
