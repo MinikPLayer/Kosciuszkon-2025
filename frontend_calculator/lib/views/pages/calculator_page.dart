@@ -263,7 +263,7 @@ class _CalculatorPageState extends State<CalculatorPage> {
                                                   ? Colors.green
                                                   : Colors.red,
                                           borderRadius: BorderRadius.circular(2),
-                                          width: 200 / entries.length,
+                                          width: MediaQuery.sizeOf(context).width / 3 / entries.length,
                                         ),
                                       ],
                                     );
