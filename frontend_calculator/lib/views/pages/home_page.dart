@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_calculator/views/pages/profil_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_calculator/data/notifiers.dart';
 
@@ -14,11 +15,7 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildWelcomeHeader(),
-                const SizedBox(height: 24),
-                _buildQuickActions(context),
-              ],
+              children: [_buildWelcomeHeader(context), const SizedBox(height: 24), _buildQuickActions(context)],
             ),
           ),
         ),
@@ -26,13 +23,36 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeHeader() {
+  Widget _buildWelcomeHeader(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Witaj w Evergy!',
-          style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Witaj w Evergy!',
+              style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[800]),
+            ),
+            IconButton(
+              onPressed: () {
+                final userData = {
+                  'email': 'example@email.com',
+                  'userType': 'Osoba prywatna',
+                  'voivodeship': 'Mazowieckie',
+                  'buildingType': 'Dom jednorodzinny',
+                  'orientation': 'Południe',
+                  'roofType': 'Dachówka ceramiczna',
+                  'roofAngle': 30.0,
+                  'storageCapacity': '10',
+                  'storageYears': '2',
+                };
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfilePage(userData: userData)));
+              },
+              icon: const Icon(Icons.account_circle, size: 32),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         Text('Ostatnie logowanie: dzisiaj', style: GoogleFonts.poppins(color: Colors.grey[600])),
@@ -135,9 +155,9 @@ class HomePage extends StatelessWidget {
   }
 
   void _showNotImplemented(BuildContext context, String label) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label - funkcjonalność w trakcie implementacji')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$label - funkcjonalność w trakcie implementacji')));
   }
 }
 
