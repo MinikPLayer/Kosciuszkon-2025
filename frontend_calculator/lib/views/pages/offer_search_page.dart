@@ -131,47 +131,47 @@ class _OfferSearchPageState extends State<OfferSearchPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 32.0),
-                    child: const Text(
-                      'Wyszukiwarka ofert paneli',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Utils.buildNumberInput(
-                    label: "Powierzchnia dachu (m2)",
-                    value: roofArea,
-                    onChanged: (value) => roofArea = value,
-                  ),
-                  Utils.buildNumberInput(label: "Budżet (zł)", value: budget, onChanged: (value) => budget = value),
-                  Utils.buildNumberInput(
-                    label: "Roczne zużycie energii (kWh)",
-                    value: yearlyConsumption,
-                    onChanged: (value) => yearlyConsumption = value,
-                  ),
-                  Utils.buildNumberInput(
-                    isInt: true,
-                    label: "Lata obliczeń",
-                    value: years.toDouble(),
-                    onChanged: (value) => years = value.toInt(),
-                  ),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: applySearch,
-                      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
-                      child: Text('Szukaj', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // Card(
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(16.0),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.center,
+          //       children: [
+          //         Padding(
+          //           padding: const EdgeInsets.only(bottom: 32.0),
+          //           child: const Text(
+          //             'Wyszukiwarka ofert paneli',
+          //             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          //           ),
+          //         ),
+          //         Utils.buildNumberInput(
+          //           label: "Powierzchnia dachu (m2)",
+          //           value: roofArea,
+          //           onChanged: (value) => roofArea = value,
+          //         ),
+          //         Utils.buildNumberInput(label: "Budżet (zł)", value: budget, onChanged: (value) => budget = value),
+          //         Utils.buildNumberInput(
+          //           label: "Roczne zużycie energii (kWh)",
+          //           value: yearlyConsumption,
+          //           onChanged: (value) => yearlyConsumption = value,
+          //         ),
+          //         Utils.buildNumberInput(
+          //           isInt: true,
+          //           label: "Lata obliczeń",
+          //           value: years.toDouble(),
+          //           onChanged: (value) => years = value.toInt(),
+          //         ),
+          //         Center(
+          //           child: ElevatedButton(
+          //             onPressed: applySearch,
+          //             style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+          //             child: Text('Szukaj', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           if (results.isNotEmpty || isLoading)
             Expanded(
               child: Card(

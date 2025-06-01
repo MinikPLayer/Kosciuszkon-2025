@@ -20,9 +20,12 @@ class FvEconomyChartInputData {
   double fvSystemInstallationCostPerKw = 5000.0;
   double fvSystemSizeKw = 1.5;
   double yearlyEnergyPriceIncreasePercentage = 7.1;
+  double fvPanelDegradationPercentagePerYear = 0.5;
 
   double energyStorageCapacity = 1.0;
   double energyStorageInstallationCostPerKw = 2000.0;
+  double energyStorageDegradationPercentagePerYear = 2.5;
+
   int calculationYears = 40;
 }
 

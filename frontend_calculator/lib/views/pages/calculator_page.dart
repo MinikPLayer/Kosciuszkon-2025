@@ -24,6 +24,9 @@ class _CalculatorPageState extends State<CalculatorPage> {
   List<Map<String, double>> yearlyResults = [];
   bool isLoading = false;
 
+  bool mojPrad6 = false;
+  bool ulgaTermodernizacyjna = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,6 +94,11 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   value: inputData.fvSystemInstallationCostPerKw,
                   onChanged: (v) => inputData.fvSystemInstallationCostPerKw = v,
                 ),
+                Utils.buildNumberInput(
+                  label: 'Roczna degradacja paneli (%)',
+                  value: inputData.fvPanelDegradationPercentagePerYear,
+                  onChanged: (v) => inputData.fvPanelDegradationPercentagePerYear = v,
+                ),
               ],
             ),
             ExpansionTile(
@@ -107,10 +115,49 @@ class _CalculatorPageState extends State<CalculatorPage> {
                   value: inputData.energyStorageInstallationCostPerKw,
                   onChanged: (v) => inputData.energyStorageInstallationCostPerKw = v,
                 ),
+                Utils.buildNumberInput(
+                  label: 'Roczna degradacja magazynu (%)',
+                  value: inputData.energyStorageDegradationPercentagePerYear,
+                  onChanged: (v) => inputData.energyStorageDegradationPercentagePerYear = v,
+                ),
               ],
             ),
             ExpansionTile(
-              title: const Text('Zaawansowane'),
+              title: const Text('Dotacje'),
+              childrenPadding: EdgeInsets.all(8.0),
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: mojPrad6,
+                      onChanged: (v) {
+                        setState(() {
+                          mojPrad6 = v ?? false;
+                        });
+                      },
+                    ),
+                    const Text('Mój prąd 6.0'),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Checkbox(
+                      value: ulgaTermodernizacyjna,
+                      onChanged: (v) {
+                        setState(() {
+                          ulgaTermodernizacyjna = v ?? false;
+                        });
+                      },
+                    ),
+                    const Text('Ulga termomodernizacyjna'),
+                  ],
+                ),
+              ],
+            ),
+            ExpansionTile(
+              title: const Text('Parametry energii'),
               childrenPadding: EdgeInsets.all(8.0),
 
               children: [
