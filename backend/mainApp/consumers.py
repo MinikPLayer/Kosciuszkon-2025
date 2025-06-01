@@ -20,10 +20,10 @@ class MeasurementConsumer(AsyncWebsocketConsumer):
 
     async def send_new_measurement(self, event):
         print("dddddddddddddddddddd")
-        print(event["measurements"])
-        await self.send(text_data=json.dumps({
-            "measurements": event["measurements"]
-        }, default=str))
+        if event["measurements"][0]['sensor'] == "ENERGY_1234_temp":
+            await self.send(text_data=json.dumps({
+                "measurements": event["measurements"]
+            }, default=str))
 
     @sync_to_async
     def get_serialized_measurements(self):
