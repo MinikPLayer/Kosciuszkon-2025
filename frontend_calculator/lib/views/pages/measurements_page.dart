@@ -200,7 +200,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                 spots: _measurements.asMap().entries.map((entry) {
                   final index = entry.key;
                   final measurement = entry.value;
-                  return FlSpot(index.toDouble(), measurement['value'].toDouble());
+                  return FlSpot(index.toDouble(), double.parse(measurement['value']));
                 }).toList(),
                 isCurved: true,
                 color: Colors.teal.shade700,
@@ -247,10 +247,10 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
               ),
             ),
             minY: _measurements.isNotEmpty
-                ? (_measurements.map((m) => m['value'].toDouble()).reduce((a, b) => a < b ? a : b) - 5)
+                ? (_measurements.map((m) => double.parse(m['value'])).reduce((a, b) => a < b ? a : b) - 5)
                 : 0,
             maxY: _measurements.isNotEmpty
-                ? (_measurements.map((m) => m['value'].toDouble()).reduce((a, b) => a > b ? a : b) + 5)
+                ? (_measurements.map((m) => double.parse(m['value'])).reduce((a, b) => a > b ? a : b) + 5)
                 : 100,
           ),
         ),
