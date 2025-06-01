@@ -22,9 +22,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://127.0.0.1:8000/ws/measurements/'),
-    );
+    channel = WebSocketChannel.connect(Uri.parse('ws://127.0.0.1:8000/ws/measurements/'));
     _initializeSimulatedData();
   }
 
@@ -37,7 +35,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
         'value': (50 + _random.nextDouble() * 50).toStringAsFixed(2), // 50-100%
         'saved_at': time.toIso8601String(),
       });
-      
+
       _storageTempData.add({
         'value': (20 + _random.nextDouble() * 15).toStringAsFixed(2), // 20-35°C
         'saved_at': time.toIso8601String(),
@@ -47,7 +45,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
 
   void _addSimulatedData() {
     final now = DateTime.now();
-    
+
     // Symulacja nasłonecznienia (wyższe w ciągu dnia)
     final hour = now.hour;
     double sunlightValue;
@@ -56,19 +54,13 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
     } else {
       sunlightValue = _random.nextDouble() * 30; // 0-30% w nocy
     }
-    
-    _sunlightData.add({
-      'value': sunlightValue.toStringAsFixed(2),
-      'saved_at': now.toIso8601String(),
-    });
+
+    _sunlightData.add({'value': sunlightValue.toStringAsFixed(2), 'saved_at': now.toIso8601String()});
     if (_sunlightData.length > 50) _sunlightData.removeAt(0);
-    
+
     // Symulacja temperatury magazynów (zależna od nasłonecznienia)
     final storageTempValue = 20 + (sunlightValue / 100 * 20) + (_random.nextDouble() * 5 - 2.5);
-    _storageTempData.add({
-      'value': storageTempValue.toStringAsFixed(2),
-      'saved_at': now.toIso8601String(),
-    });
+    _storageTempData.add({'value': storageTempValue.toStringAsFixed(2), 'saved_at': now.toIso8601String()});
     if (_storageTempData.length > 50) _storageTempData.removeAt(0);
   }
 
@@ -87,11 +79,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
         backgroundColor: Colors.teal.shade700,
         elevation: 4,
         centerTitle: true,
-        titleTextStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
+        titleTextStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -103,12 +91,12 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
               _buildSectionTitle('Temperature Monitoring'),
               _buildTemperatureChart(),
               const SizedBox(height: 20),
-              
+
               // Wykres nasłonecznienia
               _buildSectionTitle('Sunlight Level'),
               _buildSunlightChart(),
               const SizedBox(height: 20),
-              
+
               // Wykres temperatury magazynów
               _buildSectionTitle('Energy Storage Temperature'),
               _buildStorageTempChart(),
@@ -122,14 +110,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.teal,
-        ),
-      ),
+      child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.teal)),
     );
   }
 
@@ -141,21 +122,13 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
           try {
             final decoded = json.decode(snapshot.data as String);
             if (decoded is Map && decoded.containsKey('measurements')) {
-              _measurements.addAll(
-                List<Map<String, dynamic>>.from(decoded['measurements']),
-              );
+              _measurements.addAll(List<Map<String, dynamic>>.from(decoded['measurements']));
             }
-            
+
             // Aktualizuj również symulowane dane
             _addSimulatedData();
-            
-            return _buildChartContent(
-              data: _measurements,
-              unit: '°C',
-              color: Colors.teal,
-              minRange: 5,
-              maxRange: 5,
-            );
+
+            return _buildChartContent(data: _measurements, unit: '°C', color: Colors.teal, minRange: 5, maxRange: 5);
           } catch (e, stack) {
             debugPrint('❌ JSON decode error: $e\n$stack');
             return Center(child: Text('❌ JSON Error: $e'));
@@ -164,13 +137,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
           debugPrint('❌ WebSocket error: ${snapshot.error}');
           return Center(child: Text('❌ WebSocket Error: ${snapshot.error}'));
         }
-        return _buildChartContent(
-          data: _measurements,
-          unit: '°C',
-          color: Colors.teal,
-          minRange: 5,
-          maxRange: 5,
-        );
+        return _buildChartContent(data: _measurements, unit: '°C', color: Colors.teal, minRange: 5, maxRange: 5);
       },
     );
   }
@@ -188,13 +155,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
   }
 
   Widget _buildStorageTempChart() {
-    return _buildChartContent(
-      data: _storageTempData,
-      unit: '°C',
-      color: Colors.deepPurple,
-      minRange: 5,
-      maxRange: 5,
-    );
+    return _buildChartContent(data: _storageTempData, unit: '°C', color: Colors.deepPurple, minRange: 5, maxRange: 5);
   }
 
   Widget _buildChartContent({
@@ -206,23 +167,21 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
     double? minFixed,
     double? maxFixed,
   }) {
-    final minY = minFixed ?? (data.isNotEmpty
-        ? (data.map((m) => double.parse(m['value'].toString()))
-                .reduce((a, b) => a < b ? a : b) -
-            minRange)
-        : 0);
-    
-    final maxY = maxFixed ?? (data.isNotEmpty
-        ? (data.map((m) => double.parse(m['value'].toString()))
-                .reduce((a, b) => a > b ? a : b) +
-            maxRange)
-        : 100);
+    final minY =
+        minFixed ??
+        (data.isNotEmpty
+            ? (data.map((m) => double.parse(m['value'].toString())).reduce((a, b) => a < b ? a : b) - minRange)
+            : 0);
+
+    final maxY =
+        maxFixed ??
+        (data.isNotEmpty
+            ? (data.map((m) => double.parse(m['value'].toString())).reduce((a, b) => a > b ? a : b) + maxRange)
+            : 100);
 
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -236,10 +195,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                     drawVerticalLine: false,
                     horizontalInterval: (maxY - minY) / 5,
                     getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: Colors.grey.withOpacity(0.2),
-                        strokeWidth: 1,
-                      );
+                      return FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1);
                     },
                   ),
                   titlesData: FlTitlesData(
@@ -251,13 +207,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                         getTitlesWidget: (value, meta) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8.0),
-                            child: Text(
-                              '${value.toStringAsFixed(1)}$unit',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.black87,
-                              ),
-                            ),
+                            child: Text('${value.toStringAsFixed(1)}$unit', style: const TextStyle(fontSize: 10)),
                           );
                         },
                       ),
@@ -266,21 +216,11 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 20,
-                        interval: data.length > 10
-                            ? (data.length / 5).round().toDouble()
-                            : 1.0,
+                        interval: data.length > 10 ? (data.length / 5).round().toDouble() : 1.0,
                         getTitlesWidget: (value, meta) {
                           if (value.toInt() >= 0 && value.toInt() < data.length) {
-                            final time = data[value.toInt()]['saved_at']
-                                .toString()
-                                .substring(11, 16);
-                            return Text(
-                              time,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.black87,
-                              ),
-                            );
+                            final time = data[value.toInt()]['saved_at'].toString().substring(11, 16);
+                            return Text(time, style: const TextStyle(fontSize: 10));
                           }
                           return const Text('');
                         },
@@ -291,21 +231,16 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                   ),
                   borderData: FlBorderData(
                     show: true,
-                    border: Border.all(
-                      color: Colors.grey.withOpacity(0.3),
-                      width: 1,
-                    ),
+                    border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
                   ),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: data.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final measurement = entry.value;
-                        return FlSpot(
-                          index.toDouble(),
-                          double.parse(measurement['value'].toString()),
-                        );
-                      }).toList(),
+                      spots:
+                          data.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final measurement = entry.value;
+                            return FlSpot(index.toDouble(), double.parse(measurement['value'].toString()));
+                          }).toList(),
                       isCurved: true,
                       color: color,
                       barWidth: 2,
@@ -324,19 +259,12 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
-                          colors: [
-                            color.withOpacity(0.3),
-                            color.withOpacity(0.0),
-                          ],
+                          colors: [color.withOpacity(0.3), color.withOpacity(0.0)],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
                       ),
-                      shadow: Shadow(
-                        color: color.withOpacity(0.2),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
+                      shadow: Shadow(color: color.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2)),
                     ),
                   ],
                   lineTouchData: LineTouchData(
@@ -350,11 +278,7 @@ class _MeasurementsPageState extends State<MeasurementsPage> {
                           final measurement = data[spot.x.toInt()];
                           return LineTooltipItem(
                             'Value: ${spot.y.toStringAsFixed(1)}$unit\nTime: ${measurement['saved_at'].toString().substring(11, 16)}',
-                            const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
                           );
                         }).toList();
                       },
