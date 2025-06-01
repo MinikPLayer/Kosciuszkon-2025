@@ -141,6 +141,11 @@ class ChatAPI(APIView):
         prompt = request.data.get("prompt")
         print(request.data)
 
+        # # NA POTRZEBY PREZENTACJI
+        # return Response({
+        #                     "answer": "Nabór wniosków do 'Mój Prąd 6.0' rozpoczął się 1 lutego 2025 roku i potrwa do wyczerpania budżetu lub do końca roku. Warto złożyć wniosek jak najwcześniej, ponieważ zainteresowanie jest bardzo duże."},
+        #                 status=status.HTTP_200_OK)
+
         knowledge = load_knowledge('mainApp/wiedza_o_fotowoltaice.txt')
 
         response = ollama.generate(
@@ -148,14 +153,19 @@ class ChatAPI(APIView):
             prompt=prompt,
             system=f"""
                     Jesteś ekspertem od energii słonecznej. 
-                    Odpowiadaj na pytania korzystając z tej wiedzy:
+                    Odpowiadaj na pytania korzystając z tej wiedzy i pytań, które w niej występują:
                     {knowledge}.
                     Jeśli nie znasz odpowiedzi, powiedz że nie wiesz.
                     """,
             options={'temperature': 0.7}
         )
 
+        print(response['response'])
+
+        # Problem asynchronicznego przetwarzania - API DZIAŁA
         return Response({"answer": response['response']}, status=status.HTTP_200_OK)
+
+
 
 class DeviceAPI(APIView):
 
