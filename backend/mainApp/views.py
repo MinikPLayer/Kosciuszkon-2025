@@ -176,7 +176,7 @@ class AdvanceCalculator(APIView):
             # Handle CSV file uploads if present
             consumption_data, fv_production_data = load_data_from_files()
             
-            
+
             # Get parameters from request data
             data = request.data.get('parameters', {})
             if isinstance(data, str):
@@ -186,30 +186,31 @@ class AdvanceCalculator(APIView):
             required_fields = [
                 'fv_system_size_kw',
                 'energy_storage_size_kwh',
+                'single_year_consumption_kwh',
                 'first_year_energy_buying_price',
                 'first_year_energy_selling_price',
                 'fv_system_installation_cost_per_kw',
+                'es_system_installation_cost_per_kw',
                 'yearly_energy_price_increase_percentage',
                 'fv_degradation_percentage_per_year',
                 'energy_storage_degradation_percentage_per_year',
                 'years'
             ]
-            
+
+            print(data)
             for field in required_fields:
                 if field not in data:
                     return Response(
                         {"error": f"Brakujące pole: {field}"},
                         status=status.HTTP_400_BAD_REQUEST
                     )
-            
+
             # Prepare consumption and production functions
-            def consumption_func(calc_data, day_of_year, hour_of_day):
+            def consumption_func(calc_data: AdvancedCalcData, day_of_year: int, hour_of_day: int):
                 key = (day_of_year, hour_of_day)
-                if key in consumption_data:
-                    return consumption_data[key]
-                return float(data.get('default_consumption', 1713 / (24 * 365)))
-            
-            def production_func(calc_data, day_of_year, hour_of_day):
+                return consumption_data[key] * calc_data.single_year_consumption_kwh / 1713
+
+            def production_func(calc_data: AdvancedCalcData, day_of_year: int, hour_of_day: int):
                 key = (day_of_year, hour_of_day)
                 if key in fv_production_data:
                     return fv_production_data[key]
@@ -223,11 +224,13 @@ class AdvanceCalculator(APIView):
             calc_data = AdvancedCalcData(
                 fv_system_size_kw=float(data['fv_system_size_kw']),
                 energy_storage_size_kwh=float(data['energy_storage_size_kwh']),
+                single_year_consumption_kwh=float(data['single_year_consumption_kwh']),
                 consumption_kwh_at_time_func=consumption_func,
                 fv_production_kwh_per_panel_at_time_func=production_func,
                 first_year_energy_buying_price=float(data['first_year_energy_buying_price']),
                 first_year_energy_selling_price=float(data['first_year_energy_selling_price']),
                 fv_system_installation_cost_per_kw=float(data['fv_system_installation_cost_per_kw']),
+                es_system_installation_cost_per_kw=float(data['es_system_installation_cost_per_kw']),
                 yearly_energy_price_increase_percentage=float(data['yearly_energy_price_increase_percentage']),
                 fv_degradation_percentage_per_year=float(data['fv_degradation_percentage_per_year']),
                 energy_storage_degradation_percentage_per_year=float(data['energy_storage_degradation_percentage_per_year'])
