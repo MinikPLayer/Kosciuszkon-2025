@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _logout() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (r) => false);
   }
 
   Widget _buildInfoCard(String title, String value) {
